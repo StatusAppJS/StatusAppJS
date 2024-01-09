@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {    
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "module": "CommonJS",
+    "target": "ESNext",
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "Node",
+    "outDir": "./dist",
+    "sourceMap": true,
+  },
+  "files": ["src/index.tsx"]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "statusappjs",
+  "version": "0.0.1",
+  "description": "Viewer for Statuses",
+  "private": true,
+  "scripts": {
+    "clean": "rimraf dist",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run clean && webpack --mode=production --node-env=production",
+    "build:dev": "npm run clean && webpack --mode=development",
+    "build:prod": "npm run clean && webpack --mode=production --node-env=production",
+    "watch": "npm run clean && webpack --watch"
+  },
+  "keywords": [
+    "JS",
+    "Status",
+    "Viewer"
+  ],
+  "author": "District Cloud Solutions, LLC",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "@webpack-cli/generators": "^3.0.7",
+    "autoprefixer": "^10.4.16",
+    "css-loader": "^6.8.1",
+    "html-webpack-plugin": "^5.6.0",
+    "postcss": "^8.4.33",
+    "postcss-loader": "^7.3.4",
+    "prettier": "^3.1.1",
+    "sass": "^1.69.7",
+    "sass-loader": "^13.3.3",
+    "style-loader": "^3.3.3",
+    "terser-webpack-plugin": "^5.3.10",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.0-dev.20240109",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "@pnp/sp": "^3.21.0",
+    "@types/react": "^18.2.47",
+    "@types/react-dom": "^18.2.18",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
