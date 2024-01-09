@@ -1,17 +1,17 @@
 import { SPBrowser, spfi } from "@pnp/sp";
 import { useState } from 'react';
 import ProviderContext from './context';
-import UseProviderContext from './UseProviderContext';
 
-declare var _spPageContextInfo: any;
+declare const _spPageContextInfo: any;
 
 const SharePointProvider = ({ children }: { children: any }) => {
-    const sp = spfi().using(SPBrowser({ baseUrl: "https://intelshare.intelink.gov/sites/hqmcintel" }));
+  const sharepoint = spfi().using(SPBrowser({ baseUrl: _spPageContextInfo.webAbsoluteUrl }));
 
-  const [provider, setProvider] = useState(sp);
+  const [sp, setProvider] = useState(sharepoint);
+  const [StatusConfig, setStatusConfig] = useState({});
   const value = {
-    provider: { sp },
-    actions: { setProvider }
+    provider: { sp, StatusConfig },
+    actions: { setProvider, setStatusConfig }
   };
 
   return (

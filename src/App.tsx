@@ -12,11 +12,11 @@ const App: FunctionComponent = () => {
     })  
   },[]);
 
-  function getItems(){
+  async function getItems(){
     return provider.sp.web.lists.getByTitle("IEMO Services Statuses").items<SPItem[]>();
     
   }
-
+  
   return (
     <div>
       <h1>SharePoint Provider</h1>
