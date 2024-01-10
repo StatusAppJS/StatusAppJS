@@ -1,5 +1,6 @@
 import { SPFI } from "@pnp/sp";
-import { createContext } from "react";
+import { createContext, Dispatch } from "react";
+import "@pnp/sp/sites";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
@@ -8,10 +9,17 @@ import "@pnp/sp/security";
 import "@pnp/sp/site-users/web";
 import "@pnp/sp/context-info";
 import "@pnp/sp/site-groups";
+import "@pnp/sp/publishing-sitepageservice";
+import "@pnp/sp/content-types";
+
+import StatusAppConfig from '../../types/StatusAppConfig';
 
 const ProviderContext = createContext({provider: {
     sp: {} as SPFI,
-    StatusConfig: {}
-}, actions: {}});
+    StatusConfig: {} as StatusAppConfig
+}, actions: {
+    setProvider: (sp: SPFI) => {},
+    setStatusConfig: (StatusConfig: Object) => {}
+}});
 
 export default ProviderContext;
