@@ -4,6 +4,7 @@ import path, { resolve } from 'path';
 import TerserPlugin from 'terser-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { fileURLToPath } from "url";
+import CompressionPlugin from 'compression-webpack-plugin';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV == 'production';
@@ -27,18 +28,14 @@ const config = {
         publicPath: '/'
     },
     optimization: {
-        minimize: false,
+        minimize: (isProduction)? true : false,
         minimizer: [
           new TerserPlugin({
             parallel: true,
           })
-        ]
+        ],
       },
     plugins: [
-        new HtmlWebpackPlugin({
-            template: 'index.html',
-        }),
-
         // Add your plugins here
         // Learn more about plugins from https://webpack.js.org/configuration/plugins/
     ],
