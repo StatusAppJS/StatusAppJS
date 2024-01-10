@@ -20,6 +20,7 @@
   "license": "MIT",
   "type": "commonjs",
   "devDependencies": {
+    "@types/react-animations": "^1.0.3",
     "@types/uuid": "^9.0.7",
     "@webpack-cli/generators": "^3.0.7",
     "autoprefixer": "^10.4.16",
@@ -38,12 +39,17 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@pnp/sp": "^3.21.0",
     "@types/react": "^18.2.47",
     "@types/react-dom": "^18.2.18",
     "react": "^18.2.0",
+    "react-animations": "^1.0.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.49.3",
+    "styled-components": "^6.1.8",
     "uuid": "^9.0.1"
   }
 }

@@ -3,6 +3,7 @@ import UseProviderContext from "./contexts/SharePoint/UseProviderContext";
 import SPItem from "./types/SPItem";
 import { IListInfo } from "@pnp/sp/lists";
 import InitializeApplicationForm from "./components/InitializeApplicationForm";
+import { StatusApp, Header, AppContainer } from "./components/StyledComponents/App";
 
 const App: FunctionComponent = () => {
   const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
@@ -40,9 +41,18 @@ const App: FunctionComponent = () => {
   )
 
   return (
-    <div>
-      <h1>SharePoint Provider</h1>
-      {
+    <>
+    <StatusApp>
+      <Header>
+        <h1>Status App</h1>
+        <div>
+          <span>Logged in as: </span>
+          <span>Still need to implement this</span>
+        </div>
+      </Header>
+    </StatusApp>
+    <AppContainer>
+    {
         !StatusConfig.initialized ? (
           initializeForm
         )            
@@ -53,9 +63,9 @@ const App: FunctionComponent = () => {
           </>
         )
       }
-    </div>
-  );
-  
+    </AppContainer>
+    </>
+  ); 
 }
 
 export default App;
