@@ -4,6 +4,7 @@ const InputContainer = styled.div`
     display: flex;
     justify-content: space-evenly;
     margin-top: 25px;
+    align-items: center
 `;
 
 const FormHeader = styled.header`
@@ -16,7 +17,9 @@ const StyledForm = styled.div`
   background-color: #f4f4f4;
   padding: 20px;
   border-radius: 5px;
-  width:40%;
+  max-width:725px;
+  min-width:400px;
+  width: 40%;
 `
 
 const StyledLabel = styled.label<{invalid?: string;}>`
@@ -31,9 +34,13 @@ const StyledInput = styled.input<{display?: boolean}>`
   padding: 10px !important;
   border: 1px solid #ccc;
   border-radius: 5px;
+  margin: 0 20px;
   display: ${props => props.display ? 'none' : 'inherit'};
 `
-const StyledChoiceContainer = styled.div`
+const StyledChoiceInput = styled(StyledInput)`
+    margin: 0 5px;
+`;
+const StyledFieldContainer = styled.div`
     flex:3;
 `;
 
@@ -63,6 +70,13 @@ const StyledButtonGroup = styled.div`
 
 const StyledAddButton = styled(StyledButton)`
     height: fit-content;
+    margin: 0 5px;
 `;
 
-export {StyledForm, StyledAddButton, StyledButtonGroup, StyledLabel, StyledInput, StyledButton, InputContainer, FormHeader, StyledChoiceContainer, StyledChoice};
+const StyledSubmitButton = styled(StyledButton)`
+    background-color: rgb(136 241 116);
+    text-align:center;
+    margin-top:25px;
+`;
+
+export {StyledForm, StyledSubmitButton, StyledAddButton, StyledButtonGroup, StyledLabel, StyledInput, StyledButton, InputContainer, FormHeader, StyledFieldContainer, StyledChoice};

@@ -4,10 +4,17 @@ import SPItem from "./types/SPItem";
 import { IListInfo } from "@pnp/sp/lists";
 import InitializeApplicationForm from "./components/InitializeApplicationForm";
 import { StatusApp, Header, AppContainer } from "./components/StyledComponents/App";
+import { ISiteUserInfo } from "@pnp/sp/site-users/types"
 
 const App: FunctionComponent = () => {
   const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
   const [items, setItems] = useState(Array<SPItem>());
+  const [user, setUser] = useState<ISiteUserInfo | undefined>(undefined);
+  const [load, setLoad] = useState<number>(0);
+  // 0 = Initial State
+  // 1 = Loading
+  // 2 = Loaded
+  // 3 = Setup
 
   useEffect(() => {
     if(!StatusConfig.initialized) return;
@@ -17,22 +24,19 @@ const App: FunctionComponent = () => {
     })  
   },[]);
 
+  useEffect(() => {
+    if(StatusConfig.currentUser === undefined) return;
+    setUser(StatusConfig.currentUser);
+  },[StatusConfig.currentUser]);
+
   async function getItems(){
     return sp.web.lists.getByTitle("IEMO Services Statuses").items<SPItem[]>();
     
   }
 
-  async function createContentType(){
-    console.log(StatusConfig);
-    //var ct = await provider.sp.web.contentTypes.add("Status App", "0x0100D7A7F4A7F8E8C24D9F5F2C9D1F0F1C3F", "Status App Content Type", true);
-    //console.log(ct);
-    //setStatusConfig({});
-  }
- 
   const initializeRender = (
     <>
       <h2>Initializing</h2>
-      <div onClick={createContentType}>Create Content Type</div>
     </> 
   )
 
@@ -46,21 +50,18 @@ const App: FunctionComponent = () => {
       <Header>
         <h1>Status App</h1>
         <div>
-          <span>Logged in as: </span>
-          <span>Still need to implement this</span>
+          <span>Logged in as:</span>
+          <span>{user ? user.Title: ''} { user ? (user.IsSiteAdmin ? "(Site Collection Admin)": "") : ""}</span>
         </div>
       </Header>
     </StatusApp>
     <AppContainer>
     {
-        !StatusConfig.initialized ? (
+        (StatusConfig.currentUser && StatusConfig.currentUser.IsSiteAdmin) ? (
           initializeForm
         )            
         : (
-          <>
             <h2>Initialized</h2>
-            <div onClick={createContentType}>Create Content Type</div>
-          </>
         )
       }
     </AppContainer>

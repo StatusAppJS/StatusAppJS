@@ -2,9 +2,7 @@
 
 import path, { resolve } from 'path';
 import TerserPlugin from 'terser-webpack-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { fileURLToPath } from "url";
-import CompressionPlugin from 'compression-webpack-plugin';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV == 'production';
@@ -16,14 +14,14 @@ const config = {
     entry: {
         "StatusApp": './src/index.tsx',
     },
-    devtool: 'source-map',
+    devtool: 'inline-source-map',
     output: {
         filename: '[name].min.js',
         path: resolve(__dirname, 'dist'),
         globalObject: 'this',
         library: 'StatusApp',
         libraryExport: 'default',
-        libraryTarget: 'commonjs2',
+        libraryTarget: 'umd',
         clean: true,
         publicPath: '/'
     },
@@ -63,7 +61,7 @@ const config = {
         ],
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
+        extensions: ['.tsx', '.ts', '.js'],
     },
 };
 

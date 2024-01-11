@@ -1,15 +1,16 @@
 import { SPBrowser, spfi } from "@pnp/sp";
-import { useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { v5 as newGuid } from 'uuid';
 import ProviderContext from './context';
 import { stringIsNullOrEmpty } from '@pnp/core'
 import StatusAppConfig from '../../types/StatusAppConfig';
+import SPStatusConfigItem from '../../types/SPStatusConfigItem';
 
 declare const _spPageContextInfo: any;
 
-const SharePointProvider = ({ children }: { children: any }) => {
+const SharePointProvider: FunctionComponent<{children: any}> = ({ children }: { children: any }) => {
   const sharepoint = spfi().using(SPBrowser({ baseUrl: _spPageContextInfo.webAbsoluteUrl }));
-
+  
   const [sp, setProvider] = useState(sharepoint);
   const [StatusConfig, setStatusConfig] = useState(Object() as StatusAppConfig);
   const value = {
@@ -18,31 +19,57 @@ const SharePointProvider = ({ children }: { children: any }) => {
   };
 
   useEffect(() => {
-    if(StatusConfig.listId === undefined || StatusConfig.ctId === undefined) return;
-    const list = sp.web.lists.getById(StatusConfig.listId)();
-    console.log(list);
-    list.then((list) => {
-      console.log(`List: ${list.Title}`);
-    }).catch((error) => {
-      if(error.status === 404){
-        console.log('List does not exist');
-        setStatusConfig({...StatusConfig, listExists: false});
-      }
-      console.log(error.status);
-      console.log(error.statusText);
-    })
 
-  }, [StatusConfig.listId, StatusConfig.ctId]);
-  async function initializeSharePoint() {
-    const web = await sp.site.rootWeb();
+    //LIST ID SHOULD BE GOT HERE
+    if(StatusConfig.configListId === undefined){
+      setupStatusApp();
+      return;
+    }
+    if(StatusConfig.pageconfig === undefined){
+      sp.web.lists.getById(StatusConfig.configListId).items<SPStatusConfigItem[]>()
+        .then((items:SPStatusConfigItem[]) => {
+          const config = items.filter((item:SPStatusConfigItem) => item.Page === window.location.pathname)
+          if(config.length > 0){
+            setStatusConfig({...StatusConfig, pageconfig: config[0]});
+          }
+          else{
+            setStatusConfig({...StatusConfig, pageconfig: null});
+          }
+          console.log(StatusConfig);
+        });
+      return;
+    }
+    console.log(StatusConfig);
+
+  }, [StatusConfig.configListId, StatusConfig.pageconfig]);
+
+  async function setupStatusApp() {
+    const user = await sp.web.currentUser();
+    setStatusConfig({...StatusConfig, currentUser: user})
+    console.log(user);
+    console.log('Loading Application')
     const tempStatus = {...StatusConfig};
-    tempStatus.listId = newGuid('StatusAppList', web.Id);
-    tempStatus.ctId = newGuid('StatusAppContentType', web.Id);
-    setStatusConfig(tempStatus);
+    const ensure = await sp.web.lists.ensure("StatusAppConfigList", "List to hold configs for this site collection", 100, true, {Hidden: true});
+    
+    if(ensure.created){
+      //  Add Fields if Created;
+      const page = await ensure.list.fields.addText("Page");
+      const listId = await ensure.list.fields.addText("StatusListId");
+      const groupId = await ensure.list.fields.addText('AdminGroupId');
+      const defaultView = ensure.list.views.getByTitle('All Items');
+      await defaultView.fields.add((await page.field()).Title)
+      await defaultView.fields.add((await listId.field()).Title)
+      await defaultView.fields.add((await groupId.field()).Title);
+      setStatusConfig({...tempStatus, configListId: ensure.data.Id});
+      // do stuff to load a configuration for this page.
+    }
+    else{
+      console.log('List Exists, get specific config here');
+      const allItems: SPStatusConfigItem[] = await ensure.list.items();
+      const configs = (allItems).filter((item: SPStatusConfigItem) => item.Page = window.location.pathname);
+      setStatusConfig({...tempStatus, configListId: ensure.data.Id, pageconfig: configs[0] || undefined});
+    }
   }
-
-  if(stringIsNullOrEmpty(StatusConfig.listId) || stringIsNullOrEmpty(StatusConfig.ctId))
-    initializeSharePoint();
 
   return (
     <ProviderContext.Provider value={value}>
