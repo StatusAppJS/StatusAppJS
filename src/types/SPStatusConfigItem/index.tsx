@@ -2,7 +2,8 @@ import {IItem} from '@pnp/sp/items'
 
 type SPStatusConfigItem = IItem & {
     Page: string,
-    StatusListId: string
+    StatusListId: string,
+    AdminGroupId: string
 }
 
 export default SPStatusConfigItem

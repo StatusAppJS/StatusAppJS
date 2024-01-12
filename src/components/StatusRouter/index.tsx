@@ -1,10 +1,12 @@
-import React, { FunctionComponent, ReactElement, useEffect, useState } from "react"
+import React, { FunctionComponent, ReactElement, lazy, useEffect, useState } from "react"
 import Screen from "../../enums/Screen"
-import Install from '../Screens/Install'
 import LoadScreen from '../Screens/LoadScreen'
-import SetupStatusLibrary from '../Screens/SetupStatusLibrary'
-import StatusApplication from '../Screens/StatusApplication'
+const Install = lazy(() => import('../Screens/Install'));
+const SetupStatusLibrary = lazy(() => import('../Screens/SetupStatusLibrary'));
+const StatusApplication = lazy(() => import('../Screens/StatusApplication'));
 import UseProviderContext from "../../contexts/SharePoint/UseProviderContext"
+
+
 
 type StatusRouterProps = {
 }

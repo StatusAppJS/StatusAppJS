@@ -23,6 +23,7 @@ const ProviderContext = createContext({provider: {
         currentUser: undefined, 
         configList: undefined, 
         screen: Screen.Loading,
+        Loaded: false,
     } as StatusAppConfig
 }, actions: {
     setProvider: (sp: SPFI) => {},

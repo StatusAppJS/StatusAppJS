@@ -18,22 +18,9 @@ const App: FunctionComponent = () => {
   // 3 = Setup
 
   useEffect(() => {
-    if(!StatusConfig.initialized) return;
-
-    getItems().then((items: SPItem[]) => {
-      setItems(items);
-    })  
-  },[]);
-
-  useEffect(() => {
     if(StatusConfig.currentUser === undefined) return;
     setUser(StatusConfig.currentUser);
   },[StatusConfig.currentUser]);
-
-  async function getItems(){
-    return sp.web.lists.getByTitle("IEMO Services Statuses").items<SPItem[]>();
-    
-  }
 
   return (
     <>

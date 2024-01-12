@@ -10,7 +10,9 @@ function SetupStatusLibrary<FunctionComponent>() {
     
     return (
         <>
-        
+            <h1>Setup Status Library</h1>
+            <div>Config file was not found for this page.  If a list exists it will be in a dropdown and this page will register it.</div>
+            
         </>
     )
 }

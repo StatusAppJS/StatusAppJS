@@ -2,18 +2,23 @@ import { ISiteUserInfo } from "@pnp/sp/site-users/types"
 import SPStatusConfigItem from "../SPStatusConfigItem"
 import { IListInfo } from "@pnp/sp/lists/types"
 import Screen from "../../enums/Screen"
+import SPItem from "../SPItem"
+import { IChangeToken } from "@pnp/sp/types"
 
 type StatusAppConfig = {
-    listId?: string,
     configListId?: string,
-    listExists?: boolean,
     pageconfig: SPStatusConfigItem,
-    initialLoad: true,
-    loading: false,
     currentUser: ISiteUserInfo | undefined,
     configList: IListInfo | undefined,
-    initialized?: boolean,
-    screen: Screen
+    screen: Screen,
+    Loaded: boolean,
+    StatusList: {
+        listId: string,
+        list: IListInfo | undefined,
+        changeToken: IChangeToken,
+        listItems: SPItem[], 
+        isAdmin: boolean
+    }
 }
 
 export default StatusAppConfig
