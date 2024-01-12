@@ -16,7 +16,7 @@ const config = {
     },
     devtool: 'inline-source-map',
     output: {
-        filename: '[name].min.js',
+        filename: '[name].bundle.js',
         path: resolve(__dirname, 'dist'),
         globalObject: 'this',
         library: 'StatusApp',
@@ -32,6 +32,15 @@ const config = {
             parallel: true,
           })
         ],
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    chunks: 'all',
+                },
+            }
+        }
       },
     plugins: [
         // Add your plugins here
