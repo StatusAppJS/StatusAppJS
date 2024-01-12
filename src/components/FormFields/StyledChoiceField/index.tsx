@@ -72,7 +72,7 @@ const StyledChoiceField: FunctionComponent<ChoiceFieldProps> = (props: ChoiceFie
             <StyledFieldContainer>
             {props.choices.Choices.map((choice, index) => {
                 return (
-                    <FadeIn key={choice.Id}>
+                    <FadeIn key={uuid()}>
                     <StyledChoice>
                         <StyledAddButton onClick={(e) => {index === props.choices.Choices.length-1 ? addChoice(): removeChoices(e,index)}}>
                             {index === props.choices.Choices.length-1 ? (<FontAwesomeIcon icon={faPlus} type={`Button`} />): (<FontAwesomeIcon icon={faMinus} type={`Button`} />)}

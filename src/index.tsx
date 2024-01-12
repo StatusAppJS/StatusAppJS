@@ -4,7 +4,14 @@ import SharePoint from './contexts/SharePoint';
 import App from './App';
 
 
-const root = createRoot(document.getElementById('statusapp') as HTMLElement);
+const statusapp = document.createElement('div');
+statusapp.setAttribute('id', 'statusapp');
+
+const content = document.getElementById('contentRow');
+content.innerHTML = "";
+content.appendChild(statusapp);
+
+const root = createRoot(statusapp as HTMLElement);
 
 root.render(
     

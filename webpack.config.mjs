@@ -3,6 +3,7 @@
 import path, { resolve } from 'path';
 import TerserPlugin from 'terser-webpack-plugin';
 import { fileURLToPath } from "url";
+//import CompressionPlugin from 'compression-webpack-plugin';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.env.NODE_ENV == 'production';
@@ -14,9 +15,9 @@ const config = {
     entry: {
         "StatusApp": './src/index.tsx',
     },
-    devtool: 'inline-source-map',
+    devtool: (isProduction)? 'source-map' : 'inline-source-map',
     output: {
-        filename: '[name].bundle.js',
+        filename: (isProduction)? '[name].bundle.min.js' : '[name].bundle.js',
         path: resolve(__dirname, 'dist'),
         globalObject: 'this',
         library: 'StatusApp',
@@ -30,6 +31,12 @@ const config = {
         minimizer: [
           new TerserPlugin({
             parallel: true,
+            terserOptions: {
+                compress: {
+                    ecma: '2017',
+                    drop_console: (isProduction)? true : false,
+                },
+            }
           })
         ],
         splitChunks: {
@@ -43,6 +50,14 @@ const config = {
         }
       },
     plugins: [
+        /*new CompressionPlugin({
+            filename: '[path][base].gz',
+            algorithm: 'gzip',
+            test: /\.js$|\.css$|\.html$/,
+            threshold: 10240,
+            minRatio: 0.7,
+            deleteOriginalAssets: true
+        }),*/
         // Add your plugins here
         // Learn more about plugins from https://webpack.js.org/configuration/plugins/
     ],

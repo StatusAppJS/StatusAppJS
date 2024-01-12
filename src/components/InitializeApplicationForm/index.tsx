@@ -9,6 +9,7 @@ import TextField from '../../types/Fields/TextField';
 
 // Styled Components
 import { StyledForm  as FormContainer, StyledSubmitButton, FormHeader, StyledInput, StyledLabel, InputContainer } from '../StyledComponents/InitializeApplicationForm';
+import { IViewInfo } from '@pnp/sp/views';
 
 type Choice = {
     Title: string,
@@ -84,18 +85,38 @@ const InitializeApplicationForm: FunctionComponent = () => {
   async function createFields(){
     
   }
-
+  //sp.web.lists.getByTitle('StatusAppConfig').views.add("StatusView", false, {ViewQuery: '<OrderBy><FieldRef Name="Title" Ascending="TRUE"/></OrderBy>', RowLimit: 30, ViewFields: ['Title', 'StatusAppStatus', 'StatusAppCategories'], AssociatedContentTypeId: '0x01'})
   async function createList(){
     var createSiteFields = await createFields();
     var listInfo: Partial<IListInfo> = {
-      Title: "StatusAppConfig",
-      Description: "Config List for the Status Application",
+      Title: "StatusAppList",
+      Description: "List For the Status Application",
       BaseTemplate: 100,
       AllowContentTypes: true,
       ContentTypesEnabled: true,
       Hidden: true,
-      ContentTypes: [],
-      Fields: []
+      Views: [{
+        Title: 'StatusView',
+        PersonalView: false,
+        ViewQuery: '<OrderBy><FieldRef Name="Title" Ascending="TRUE"/></OrderBy>',
+        RowLimit: 30,
+        ViewFields: ['Title', 'StatusAppStatus', 'StatusAppCategories'],
+        AssociatedContentTypeId: '0x01'
+      } as unknown as IViewInfo],
+      DefaultView: 'StatusView',
+      Fields: [{
+        Title: 'Status',
+        InternalName: 'StatusAppStatus',
+        Group: 'StatusApp',
+        FormatType: ChoiceFieldFormatType.Dropdown,
+        Choices: ['Up','Degraded','Down']
+      } as Partial<IFieldInfo>, {
+        Title: 'Categories',
+        InternalName: 'StatusAppCategories',
+        Group: 'StatusApp',
+        FormatType: ChoiceFieldFormatType.Dropdown,
+        Choices: ['Hosted', 'Collaborative']
+      } as Partial<IFieldInfo>]
     };
 
     const list = {'created':''}//;await sp.web.lists.ensure(listInfo.Title, listInfo.Description, listInfo.BaseTemplate, listInfo.ContentTypesEnabled, listInfo);
