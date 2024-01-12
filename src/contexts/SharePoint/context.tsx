@@ -15,12 +15,14 @@ import "@pnp/sp/content-types";
 import '@pnp/sp/views';
 
 import StatusAppConfig from '../../types/StatusAppConfig';
+import Screen from '../../enums/Screen';
 
 const ProviderContext = createContext({provider: {
     sp: {} as SPFI,
     StatusConfig: {
         currentUser: undefined, 
-        configList: undefined
+        configList: undefined, 
+        screen: Screen.Loading,
     } as StatusAppConfig
 }, actions: {
     setProvider: (sp: SPFI) => {},

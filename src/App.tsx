@@ -5,6 +5,7 @@ import { IListInfo } from "@pnp/sp/lists";
 import InitializeApplicationForm from "./components/InitializeApplicationForm";
 import { StatusApp, Header, AppContainer } from "./components/StyledComponents/App";
 import { ISiteUserInfo } from "@pnp/sp/site-users/types"
+import StatusRouter from "./components/StatusRouter";
 
 const App: FunctionComponent = () => {
   const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
@@ -34,16 +35,6 @@ const App: FunctionComponent = () => {
     
   }
 
-  const initializeRender = (
-    <>
-      <h2>Initializing</h2>
-    </> 
-  )
-
-  const initializeForm = (
-    <InitializeApplicationForm />
-  )
-
   return (
     <>
     <StatusApp>
@@ -56,14 +47,7 @@ const App: FunctionComponent = () => {
       </Header>
     </StatusApp>
     <AppContainer>
-    {
-        (StatusConfig.currentUser && StatusConfig.currentUser.IsSiteAdmin) ? (
-          initializeForm
-        )            
-        : (
-            <h2>Initialized</h2>
-        )
-      }
+      <StatusRouter />
     </AppContainer>
     </>
   ); 

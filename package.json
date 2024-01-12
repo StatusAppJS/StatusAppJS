@@ -23,6 +23,7 @@
     "@types/react": "^18.2.47",
     "@types/react-animations": "^1.0.3",
     "@types/react-dom": "^18.2.18",
+    "@types/react-lottie": "^1.2.10",
     "@types/uuid": "^9.0.7",
     "@webpack-cli/generators": "^3.0.7",
     "autoprefixer": "^10.4.16",
@@ -49,6 +50,7 @@
     "react": "^18.2.0",
     "react-animations": "^1.0.0",
     "react-dom": "^18.2.0",
+    "react-lottie": "^1.2.4",
     "styled-components": "^6.1.8",
     "uuid": "^9.0.1"
   }
