@@ -32,7 +32,12 @@ const InitializeApplicationForm: FunctionComponent = () => {
     ContentTypes: [],
     Fields: []
   })
-  const [statuses, setStatuses] = useState<ChoiceField>({
+  const [statuses, setStatuses] = useState([{
+    Title: '',
+    Id: uuid()
+  } as Choice]);
+  /*
+  useState<ChoiceField>({
     Title: 'Status',
     InternalName: 'StatusAppStatus',
     Group: 'StatusApp',
@@ -42,8 +47,12 @@ const InitializeApplicationForm: FunctionComponent = () => {
       Id: uuid()
     } as Choice]
   } as ChoiceField);
-
-  const [categories, setCategories] = useState<ChoiceField>({
+*/
+  const [categories, setCategories] = useState([{
+    Title: '',
+    Id: uuid()
+  } as Choice])
+  /*useState<ChoiceField>({
     Title: 'Categories',
     InternalName: 'StatusAppCategories',
     Group: 'StatusApp',
@@ -53,11 +62,13 @@ const InitializeApplicationForm: FunctionComponent = () => {
       Id: uuid()
     } as Choice]
   } as ChoiceField);
-
+*/
+  /*
   useEffect(() => {
     console.log('repainting statuses');
     console.log(statuses);
   }, [statuses]);
+*/
 
   async function createStatusList(){
     console.log('"Creating list" but really just initializing the app');
@@ -82,57 +93,6 @@ const InitializeApplicationForm: FunctionComponent = () => {
     }
   }
 
-  async function createFields(){
-    
-  }
-  //sp.web.lists.getByTitle('StatusAppConfig').views.add("StatusView", false, {ViewQuery: '<OrderBy><FieldRef Name="Title" Ascending="TRUE"/></OrderBy>', RowLimit: 30, ViewFields: ['Title', 'StatusAppStatus', 'StatusAppCategories'], AssociatedContentTypeId: '0x01'})
-  async function createList(){
-    var createSiteFields = await createFields();
-    var listInfo: Partial<IListInfo> = {
-      Title: "StatusAppList",
-      Description: "List For the Status Application",
-      BaseTemplate: 100,
-      AllowContentTypes: true,
-      ContentTypesEnabled: true,
-      Hidden: true,
-      Views: [{
-        Title: 'StatusView',
-        PersonalView: false,
-        ViewQuery: '<OrderBy><FieldRef Name="Title" Ascending="TRUE"/></OrderBy>',
-        RowLimit: 30,
-        ViewFields: ['Title', 'StatusAppStatus', 'StatusAppCategories'],
-        AssociatedContentTypeId: '0x01'
-      } as unknown as IViewInfo],
-      DefaultView: 'StatusView',
-      Fields: [{
-        Title: 'Status',
-        InternalName: 'StatusAppStatus',
-        Group: 'StatusApp',
-        FormatType: ChoiceFieldFormatType.Dropdown,
-        Choices: ['Up','Degraded','Down']
-      } as Partial<IFieldInfo>, {
-        Title: 'Categories',
-        InternalName: 'StatusAppCategories',
-        Group: 'StatusApp',
-        FormatType: ChoiceFieldFormatType.Dropdown,
-        Choices: ['Hosted', 'Collaborative']
-      } as Partial<IFieldInfo>]
-    };
-
-    const list = {'created':''}//;await sp.web.lists.ensure(listInfo.Title, listInfo.Description, listInfo.BaseTemplate, listInfo.ContentTypesEnabled, listInfo);
-    if(list.created){
-      console.log(list);
-    }
-    else{
-      console.log('List already exists');
-      console.log(list);
-    }
-  }
-  
-  function addCategory(){
-    console.log('Adding category');
-  }
-
   return (
     <>
         <FormContainer>
@@ -142,15 +102,15 @@ const InitializeApplicationForm: FunctionComponent = () => {
           <div>
               <InputContainer>
                   <StyledLabel htmlFor="Title">List Title</StyledLabel>
-                  <StyledInput type="text" placeholder="Title" onChange={(e) => {setListValues({...listValues, ...{Title: e.target.value}})}} />                    
+                  <StyledInput key={`StatusTitleField`} type="text" placeholder="Title" defaultValue={listValues.Title} onChange={(e) => {setListValues({...listValues, Title: e.target.value})}} />                    
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Status">Status Choices</StyledLabel>
-                  <StyledChoiceField choices={statuses} setChoices={setStatuses} />
+                  <StyledChoiceField key={`Status123`} fixedGUID={`Status123`} choices={statuses} setChoices={setStatuses} />
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Category">Categories</StyledLabel>
-                  <StyledChoiceField choices={categories} setChoices={setCategories} />
+                  <StyledChoiceField key={`Categories123`} fixedGUID={`Categories123`} choices={categories} setChoices={setCategories} />
               </InputContainer>
               <StyledSubmitButton onClick={createStatusList}>
                 Create List

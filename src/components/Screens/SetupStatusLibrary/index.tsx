@@ -12,6 +12,7 @@ const SetupStatusLibrary: FunctionComponent = () => {
 
     const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
     
+    /*
     useEffect(()=>{
         var listInfo: Partial<IListInfo> = {
             Title: "StatusAppList",
@@ -19,8 +20,6 @@ const SetupStatusLibrary: FunctionComponent = () => {
             BaseTemplate: 100,
             AllowContentTypes: true,
             ContentTypesEnabled: true,
-            Hidden: true,
-            Views: [],
             Fields: [{
               Title: 'Status',
               InternalName: 'StatusAppStatus',
@@ -35,10 +34,9 @@ const SetupStatusLibrary: FunctionComponent = () => {
               Choices: ['Hosted', 'Collaborative']
             } as Partial<IFieldInfo>]
           };
-
-        addList(listInfo);
     },[])
-
+*/
+    /*  This creates the list properly!!  Need to update the stored config list with a single entry pointing to this
     async function addList(listInfo: Partial<IListInfo>) {
       console.log('creating generic status list');
         const result = await sp.web.lists.ensure(listInfo.Title, listInfo.Description, listInfo.BaseTemplate, listInfo.ContentTypesEnabled);
@@ -54,11 +52,13 @@ const SetupStatusLibrary: FunctionComponent = () => {
         }
         console.log(list);
     }
-
+    */
     return (
         <>
-            <h1>Setup Status Library</h1><br />
+            <div className="setup">
+            <h1>Setup Status Library</h1>
             <InitializeApplicationForm />
+            </div>
             
         </>
     )

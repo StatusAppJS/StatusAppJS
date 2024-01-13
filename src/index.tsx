@@ -16,9 +16,7 @@ const root = createRoot(statusapp as HTMLElement);
 root.render(
     
         <SharePoint>
-            <StrictMode>
             <App />
-            </StrictMode>
         </SharePoint>
 );
 

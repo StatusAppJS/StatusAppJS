@@ -1,4 +1,4 @@
-import Lottie from "react-lottie";
+import { Player } from '@lottiefiles/react-lottie-player';
 import * as lottie from "./LoadingImage.json";
 
 export default function Loading(){
@@ -10,5 +10,5 @@ export default function Loading(){
       preserveAspectRatio: "xMidYMid slice"
     }
   };
-  return (<Lottie options={defaultOptions} height={400} width={400} />);
+  return (<Player autoplay loop src={lottie} style={{width: '400px', height:'400px'}} />);
 }

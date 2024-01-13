@@ -1,3 +1,5 @@
+import { Transition } from "react-transition-group";
+import TransitionGroup from "react-transition-group/TransitionGroup";
 import styled from "styled-components";
 
 const InputContainer = styled.div`
@@ -18,7 +20,7 @@ const StyledForm = styled.div`
   padding: 20px;
   border-radius: 5px;
   max-width:725px;
-  min-width:400px;
+  min-width:500px;
   width: 40%;
 `
 
@@ -47,6 +49,30 @@ const StyledFieldContainer = styled.div`
 const StyledChoice = styled.div`
     display:flex;
     padding-bottom: 5px;
+
+    &.choice-enter{
+        opacity: 0;
+        transform: translateY(20px)
+    }
+
+    &.choice-enter-active{
+        opacity: 1;
+        transform: translateY(0px);
+        transition: all 500ms ease-in;
+    }
+
+    &.choice-exit{
+        opacity: 1;
+        transform:translateX(40px);
+        transition: all 500ms ease-in;
+    }
+
+    &.choice-exit-active{
+        opacity: 0;
+        transform: transformX(0px)
+        
+    }
+    
 `;
 
 const StyledButton = styled.div<{disabled?:boolean}>`
@@ -79,4 +105,8 @@ const StyledSubmitButton = styled(StyledButton)`
     margin-top:25px;
 `;
 
-export {StyledForm, StyledSubmitButton, StyledAddButton, StyledButtonGroup, StyledLabel, StyledInput, StyledButton, InputContainer, FormHeader, StyledFieldContainer, StyledChoice};
+const StyledTransitionGroup = styled(TransitionGroup)`
+    flex: 3;
+`
+
+export {StyledForm, StyledTransitionGroup, StyledSubmitButton, StyledAddButton, StyledButtonGroup, StyledLabel, StyledInput, StyledButton, InputContainer, FormHeader, StyledFieldContainer, StyledChoice};

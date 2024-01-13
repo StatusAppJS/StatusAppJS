@@ -1,21 +1,13 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { Component, FunctionComponent, useEffect, useState } from "react";
 import UseProviderContext from "./contexts/SharePoint/UseProviderContext";
-import SPItem from "./types/SPItem";
-import { IListInfo } from "@pnp/sp/lists";
-import InitializeApplicationForm from "./components/InitializeApplicationForm";
 import { StatusApp, Header, AppContainer } from "./components/StyledComponents/App";
 import { ISiteUserInfo } from "@pnp/sp/site-users/types"
 import StatusRouter from "./components/StatusRouter";
 
 const App: FunctionComponent = () => {
   const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
-  const [items, setItems] = useState(Array<SPItem>());
   const [user, setUser] = useState<ISiteUserInfo | undefined>(undefined);
-  const [load, setLoad] = useState<number>(0);
-  // 0 = Initial State
-  // 1 = Loading
-  // 2 = Loaded
-  // 3 = Setup
+
 
   useEffect(() => {
     if(StatusConfig.currentUser === undefined) return;
