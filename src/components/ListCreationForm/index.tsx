@@ -1,26 +1,37 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import UseProviderContext from '../../contexts/SharePoint/UseProviderContext';
 import { IListInfo } from '@pnp/sp/lists/types';
-import { ChoiceFieldFormatType, IFieldInfo } from '@pnp/sp/fields/types';
 import { v4 as uuid } from 'uuid';
 import StyledChoiceField from '../FormFields/StyledChoiceField';
-import ChoiceField from '../../types/Fields/ChoiceField';
-import TextField from '../../types/Fields/TextField';
+
 
 // Styled Components
 import { StyledForm  as FormContainer, StyledSubmitButton, FormHeader, StyledInput, StyledLabel, InputContainer } from '../StyledComponents/InitializeApplicationForm';
 import { IViewInfo } from '@pnp/sp/views';
+import { FieldTypes, IFieldInfo } from '@pnp/sp/fields/types';
 
 type Choice = {
     Title: string,
     Id: string,
 }
 
+type ListCreationFormProps = {
+  onCreateList: (listInfo: Partial<IListInfo>) => Promise<void>
+}
 
-const InitializeApplicationForm: FunctionComponent = () => {
+const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateList}: ListCreationFormProps) => {
 
   const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
 
+  const [statuses, setStatuses] = useState([{
+    Title: '',
+    Id: uuid()
+  } as Choice]);
+
+  const [categories, setCategories] = useState([{
+    Title: '',
+    Id: uuid()
+  } as Choice])
   
   const [listValues, setListValues] = useState<Partial<IListInfo>>({
     Title: "",
@@ -28,47 +39,34 @@ const InitializeApplicationForm: FunctionComponent = () => {
     BaseTemplate: 100,
     AllowContentTypes: true,
     ContentTypesEnabled: true,
-    Hidden: true,
     ContentTypes: [],
-    Fields: []
+    Fields:[
+      {
+        Title: "Status",
+        InternalName: 'StatusAppStatus',
+        FieldTypeKind: FieldTypes.Choice,
+        Group: 'StatusApp',
+        Choices: [...(statuses.map((i) => i.Title))]
+      } as Partial<IFieldInfo>,
+      {
+        Title: 'Categories',
+        InternalName: 'StatusAppCategories',
+        FieldTypeKind: 6,
+        Group: 'StatusApp',
+        Choices: [...(categories.map((i) => i.Title))]
+      } as Partial<IFieldInfo>
+    ]
   })
-  const [statuses, setStatuses] = useState([{
-    Title: '',
-    Id: uuid()
-  } as Choice]);
-  /*
-  useState<ChoiceField>({
-    Title: 'Status',
-    InternalName: 'StatusAppStatus',
-    Group: 'StatusApp',
-    FormatType: ChoiceFieldFormatType.Dropdown,
-    Choices: [{
-      Title: '',
-      Id: uuid()
-    } as Choice]
-  } as ChoiceField);
-*/
-  const [categories, setCategories] = useState([{
-    Title: '',
-    Id: uuid()
-  } as Choice])
-  /*useState<ChoiceField>({
-    Title: 'Categories',
-    InternalName: 'StatusAppCategories',
-    Group: 'StatusApp',
-    FormatType: ChoiceFieldFormatType.Dropdown,
-    Choices: [{
-      Title: '',
-      Id: uuid()
-    } as Choice]
-  } as ChoiceField);
-*/
-  /*
+  
   useEffect(() => {
-    console.log('repainting statuses');
-    console.log(statuses);
-  }, [statuses]);
-*/
+    setListValues({...listValues, Fields: listValues.Fields.filter((field) => {
+      if(field.Title === 'Status')
+        field.Choices = [...(statuses.map((i) => i.Title))]
+      if(field.Title === 'Categories')
+        field.Choices = [...(categories.map((i) => i.Title))]
+      return field;
+    })})
+  },[statuses, categories])
 
   async function createStatusList(){
     console.log('"Creating list" but really just initializing the app');
@@ -106,13 +104,13 @@ const InitializeApplicationForm: FunctionComponent = () => {
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Status">Status Choices</StyledLabel>
-                  <StyledChoiceField key={`Status123`} fixedGUID={`Status123`} choices={statuses} setChoices={setStatuses} />
+                  <StyledChoiceField key={`Status123`} choices={statuses} setChoices={setStatuses} />
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Category">Categories</StyledLabel>
-                  <StyledChoiceField key={`Categories123`} fixedGUID={`Categories123`} choices={categories} setChoices={setCategories} />
+                  <StyledChoiceField key={`Categories123`} choices={categories} setChoices={setCategories} />
               </InputContainer>
-              <StyledSubmitButton onClick={createStatusList}>
+              <StyledSubmitButton onClick={onCreateList.bind(this,listValues)}>
                 Create List
               </StyledSubmitButton>
           </div>
@@ -121,4 +119,4 @@ const InitializeApplicationForm: FunctionComponent = () => {
   );
 }
 
-export default InitializeApplicationForm;
+export default ListCreationForm;

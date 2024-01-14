@@ -1,9 +1,12 @@
-import React, { createRef, useRef, useState } from "react";
+import React, { createRef, } from "react";
 import { FunctionComponent } from "react";
-import { StyledTransitionGroup,StyledAddButton, StyledButton, StyledInput, StyledButtonGroup, StyledFieldContainer, StyledChoice } from '../../StyledComponents/InitializeApplicationForm';
-import { FadeIn } from '../../Animations/FadeIn';
+import { StyledAddButton, StyledButton, StyledInput, StyledButtonGroup, StyledFieldContainer, StyledChoice } from '../../StyledComponents/InitializeApplicationForm';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { v4 as uuid } from 'uuid';
+import anime from 'animejs';
+import { Flipper, Flipped } from 'react-flip-toolkit'
+
+
 
 // Font Awesome Icons
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons/faArrowDown';
@@ -13,12 +16,10 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 
 // import generic types
 import {Choice} from  '../../../types/ChoiceFieldValue';
-import ChoiceField from "../../../types/Fields/ChoiceField";
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+
 type ChoiceFieldProps = {
     choices: Choice[],
-    setChoices: Function,
-    fixedGUID: string
+    setChoices: Function
 }
 
 const StyledChoiceField: FunctionComponent<ChoiceFieldProps> = (props: ChoiceFieldProps) => {
@@ -71,13 +72,52 @@ const StyledChoiceField: FunctionComponent<ChoiceFieldProps> = (props: ChoiceFie
         props.setChoices([...tempChoices]);
     }
 
-    return (
-        <>
+    type AnimeCallbackFunction = (anim: anime.AnimeInstance) => void;
+    type AnimeTarget = string | object | HTMLElement | SVGElement | NodeList | null;
+    /* ANIMATION FUNCTIONS */
+    const animateElementIn = (el:AnimeTarget, i: number) =>
+        anime({
+            targets: el,
+            opacity: 1,
+            delay: i * 10,
+            easing: "easeOutSine"
+        });
 
-                <StyledTransitionGroup className="choice-list">
-                    {props.choices.map(({Title, Id, nodeRef}, index) => {return (
-                        <CSSTransition key={Id} classNames="choice" timeout={500} nodeRef={nodeRef}>
-                            <StyledChoice ref={nodeRef}>
+    const animateElementOut = (el:AnimeTarget, i: number, onComplete:AnimeCallbackFunction) => {
+        anime({
+            targets: el,
+            opacity: 0,
+            delay: i * 30,
+            easing: "easeOutSine",
+            complete: onComplete
+        });
+    };
+
+    const simultaneousAnimations = ({
+        hideEnteringElements,
+        animateEnteringElements,
+        animateExitingElements,
+        animateFlippedElements
+    }: {
+        hideEnteringElements: () => void,
+        animateExitingElements: () => Promise<void>,
+        animateFlippedElements: () => Promise<void> | void,
+        animateEnteringElements: () => void,
+    }) => {
+        hideEnteringElements();
+        animateExitingElements();
+        animateFlippedElements();
+        animateEnteringElements();
+    };
+
+    return (
+        
+            <Flipper flipKey={props.choices} handleEnterUpdateDelete={simultaneousAnimations} element="div">
+                {props.choices.map(({Title, Id, nodeRef}, index) => {
+                    return (
+                        <Flipped key={Id} flipId={Id} onAppear={animateElementIn} onExit={animateElementOut}>
+                            <StyledFieldContainer>
+                            <StyledChoice>
                                 <StyledAddButton onClick={(e) => {index === props.choices.length-1 ? addChoice(): removeChoices(e,index)}}>
                                     {index === props.choices.length-1 ? (<FontAwesomeIcon icon={faPlus} type={`Button`} />): (<FontAwesomeIcon icon={faMinus} type={`Button`} />)}
                                 </StyledAddButton>
@@ -91,12 +131,13 @@ const StyledChoiceField: FunctionComponent<ChoiceFieldProps> = (props: ChoiceFie
                                     </StyledButton>
                                 </StyledButtonGroup>
                             </StyledChoice>
-                        </CSSTransition>
-                        );}
-                    )}
-                </StyledTransitionGroup>
-
-        </>
+                            </StyledFieldContainer>
+                        </Flipped>
+                    );}
+                )}
+            </Flipper>
+        
+        
     )
 
 }

@@ -20,10 +20,9 @@
   "license": "MIT",
   "type": "commonjs",
   "devDependencies": {
+    "@types/animejs": "^3.1.12",
     "@types/react": "^18.2.47",
-    "@types/react-animations": "^1.0.3",
     "@types/react-dom": "^18.2.18",
-    "@types/react-transition-group": "^4.4.10",
     "@types/uuid": "^9.0.7",
     "@webpack-cli/generators": "^3.0.7",
     "autoprefixer": "^10.4.16",
@@ -46,13 +45,12 @@
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@lottiefiles/lottie-player": "^2.0.2",
     "@lottiefiles/react-lottie-player": "^3.5.3",
     "@pnp/sp": "^3.21.0",
+    "animejs": "^3.2.2",
     "react": "^18.2.0",
-    "react-animations": "^1.0.0",
     "react-dom": "^18.2.0",
-    "react-transition-group": "^4.4.5",
+    "react-flip-toolkit": "^7.1.0",
     "styled-components": "^6.1.8",
     "uuid": "^9.0.1"
   }
