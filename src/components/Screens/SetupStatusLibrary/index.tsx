@@ -43,37 +43,29 @@ const SetupStatusLibrary: FunctionComponent = () => {
       console.log(listInfo);
 
       const result = await sp.web.lists.add(listInfo.Title, listInfo.Description, listInfo.BaseTemplate, listInfo.ContentTypesEnabled);
+
+      // for some reason Array.Map is not working correctly with the async calls.  I was forced into using a for loop :-(
       for(var i = 0; i < listInfo.Fields.length; i++){
         const field = listInfo.Fields[i];
         await sp.web.lists.getByTitle(result.data.Title).fields.addChoice(field.Title, {Choices: field.Choices, EditFormat: ChoiceFieldFormatType.Dropdown, FillInChoice: false, Group: 'StatusApp'});
         await result.list.views.getByTitle('All Items').fields.add(field.Title);
         console.log(field.Title,'added');
       }
-      /*
-      listInfo.Fields.forEach(async (field) => {
-          await sp.web.lists.getByTitle(result.data.Title).fields.addChoice(field.Title, {Choices: field.Choices, EditFormat: ChoiceFieldFormatType.Dropdown, FillInChoice: false, Group: 'StatusApp'})
-          await result.list.views.getByTitle('All Items').fields.add(field.Title);
-          console.log(field.Title,'added');
-        });*/
-        console.log('List should be created here.  The next step is registering it with the config list')
-    }
-    /*  This creates the list properly!!  Need to update the stored config list with a single entry pointing to this
-    async function addList(listInfo: Partial<IListInfo>) {
-      console.log('creating generic status list');
-        const result = await sp.web.lists.ensure(listInfo.Title, listInfo.Description, listInfo.BaseTemplate, listInfo.ContentTypesEnabled);
-        let list;
-        if(result.created){
-          list = await result.list();
+      console.log('List should be created here.  The next step is registering it with the config list');
 
-          listInfo.Fields.map(async (field) => {
-            const f = await sp.web.lists.getByTitle(result.data.Title).fields.addChoice(field.Title, {Choices: field.Choices, EditFormat: ChoiceFieldFormatType.Dropdown, FillInChoice: false, Group: 'StatusApp'});
-            await result.list.views.getByTitle('All Items').fields.add(field.Title);
-            console.log('Added Field: ', f);
-          });
-        }
-        console.log(list);
+      // Now we need to add the list to the config list
+      const configListItems = sp.web.lists.getByTitle('StatusAppConfigList').items;
+
+      const newConfig = await configListItems.add({
+          Title: result.data.Title,
+          Page: window.location.pathname.toLowerCase(),
+          StatusListId: result.data.Id
+      });
+
+      console.log('List should be added to the config list.  The next step is to add the admin group to the list');
+      console.log('newConfig:',newConfig);
     }
-    */
+    
     return (
         <>
             <div className="setup">

@@ -1,4 +1,6 @@
-import styled from "styled-components";
+import { BlockPicker } from 'react-color'
+import { Flipper } from 'react-flip-toolkit';
+import styled, { keyframes } from "styled-components";
 
 const InputContainer = styled.div`
     display: flex;
@@ -79,4 +81,60 @@ const StyledSubmitButton = styled(StyledButton)`
     margin-top:25px;
 `;
 
-export {StyledForm, StyledSubmitButton, StyledAddButton, StyledButtonGroup, StyledLabel, StyledInput, StyledButton, InputContainer, FormHeader, StyledFieldContainer, StyledChoice};
+const showColors = keyframes`
+    from {
+        top: -100%;
+        left: -50%;
+        opacity: 0;
+        transform: scale(0);
+    }
+    to {
+        top:100%;
+        left:100%;
+        opacity: 1;
+        transform: scale(1);
+    }
+`;
+const hideColors = keyframes`
+    from {
+        top:100%;
+        left:100%;
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        top: -100%;
+        left: -50%;
+        opacity: 0;
+        transform: scale(0);
+    }
+
+`;
+
+const StyledBlockPicker = styled(BlockPicker)`
+    position: absolute !important;
+    opacity: 0;
+    &:hover{
+        background-color: transparent;
+    }
+    &.color-picker-closed{
+        top: -100%;
+        left: -50%;
+        transform: scale(0);
+        opacity:0;
+        animation: ${hideColors} 0.5s ease-in-out;
+    }
+    &.color-picker-open {
+        top:100%;
+        left:100%;
+        transform: scale(1);
+        opacity:1;
+        animation: ${showColors} 0.5s ease-in-out;
+    }
+`;
+
+const StyledFlipper = styled(Flipper)`
+    position:relative;
+`;
+
+export {StyledForm, StyledSubmitButton, StyledFlipper, StyledBlockPicker, StyledAddButton, StyledButtonGroup, StyledLabel, StyledInput, StyledButton, InputContainer, FormHeader, StyledFieldContainer, StyledChoice};

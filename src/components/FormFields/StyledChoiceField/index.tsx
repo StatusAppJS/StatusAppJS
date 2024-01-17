@@ -1,11 +1,10 @@
-import React, { createRef, } from "react";
+import React, { createRef, useState } from "react";
 import { FunctionComponent } from "react";
-import { StyledAddButton, StyledButton, StyledInput, StyledButtonGroup, StyledFieldContainer, StyledChoice } from '../../StyledComponents/InitializeApplicationForm';
+import { StyledAddButton, StyledFlipper, StyledBlockPicker, StyledButton, StyledInput, StyledButtonGroup, StyledFieldContainer, StyledChoice } from '../../StyledComponents/InitializeApplicationForm';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { v4 as uuid } from 'uuid';
 import anime from 'animejs';
 import { Flipper, Flipped } from 'react-flip-toolkit'
-
 
 
 // Font Awesome Icons
@@ -13,22 +12,25 @@ import { faArrowDown } from '@fortawesome/free-solid-svg-icons/faArrowDown';
 import { faArrowUp } from '@fortawesome/free-solid-svg-icons/faArrowUp';
 import { faMinus } from '@fortawesome/free-solid-svg-icons/faMinus';
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
-
+import { faPalette } from '@fortawesome/free-solid-svg-icons/faPalette';
 // import generic types
 import {Choice} from  '../../../types/ChoiceFieldValue';
 
 type ChoiceFieldProps = {
     choices: Choice[],
-    setChoices: Function
+    setChoices: Function,
+    childKey: string
 }
 
 const StyledChoiceField: FunctionComponent<ChoiceFieldProps> = (props: ChoiceFieldProps) => {
 
+    const [choicePickerOpen, setChoicePickerOpen] = useState([null]);
+
     function addChoice(){
         props.setChoices([...props.choices, {
             Title: '',
-            Id: uuid(),
-            nodeRef: createRef<HTMLDivElement>(),
+            Color: '#000000',
+            Id: uuid()
         } as Choice]);
     }
 
@@ -110,15 +112,29 @@ const StyledChoiceField: FunctionComponent<ChoiceFieldProps> = (props: ChoiceFie
         animateEnteringElements();
     };
 
+    function setColor(color: any, index: number){
+        const tempChoices = [...props.choices];
+        tempChoices[index].Color = color.hex;
+        props.setChoices([...tempChoices]);
+    }
+    function toggleColorSelector(e: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number){
+        const tempChoicePickerOpen = [...choicePickerOpen];
+        if(tempChoicePickerOpen[index] === null) tempChoicePickerOpen[index] = true;
+        else if(index > -1){
+            tempChoicePickerOpen[index] = !tempChoicePickerOpen[index];
+        }
+        setChoicePickerOpen([...tempChoicePickerOpen]);
+    }
     return (
         
             <Flipper flipKey={props.choices} handleEnterUpdateDelete={simultaneousAnimations} element="div">
                 {props.choices.map(({Title, Id, nodeRef}, index) => {
+                    if(choicePickerOpen[index] === undefined) setChoicePickerOpen([...choicePickerOpen, null])
                     return (
                         <Flipped key={Id} flipId={Id} onAppear={animateElementIn} onExit={animateElementOut}>
                             <StyledFieldContainer>
                             <StyledChoice>
-                                <StyledAddButton onClick={(e) => {index === props.choices.length-1 ? addChoice(): removeChoices(e,index)}}>
+                                <StyledAddButton onClick={(e) => {index === props.choices.length-1 ? addChoice() : removeChoices(e,index)}}>
                                     {index === props.choices.length-1 ? (<FontAwesomeIcon icon={faPlus} type={`Button`} />): (<FontAwesomeIcon icon={faMinus} type={`Button`} />)}
                                 </StyledAddButton>
                                 <StyledInput type="text" onChange={(e)=>{setChoice(e, index)}} placeholder="Enter new value" defaultValue={Title} />
@@ -129,6 +145,14 @@ const StyledChoiceField: FunctionComponent<ChoiceFieldProps> = (props: ChoiceFie
                                     <StyledButton disabled={index === props.choices.length-1 || props.choices[index].Title.length < 1} onClick={(e) => {(index < (props.choices.length-1))? moveChoicesDown(e,index): console.log('Cannot go lower than the bottom')}}>
                                         <FontAwesomeIcon icon={faArrowDown} type={`Button`} />
                                     </StyledButton>
+                                    <StyledFlipper flipKey={`${props.childKey + choicePickerOpen[index]}`}>
+                                        <StyledButton onClick={(e) => {toggleColorSelector(e,index)}}>
+                                            <FontAwesomeIcon icon={faPalette} type={`Button`} style={{color: props.choices[index].Color}} />
+                                        </StyledButton>
+                                        <StyledBlockPicker color={props.choices[index].Color} onChange={(c) => {setColor(c,index)}} triangle="hide"
+                                            className={choicePickerOpen[index] === null ? '' : choicePickerOpen[index] ? 'color-picker-open': 'color-picker-closed'}
+                                        />
+                                    </StyledFlipper>
                                 </StyledButtonGroup>
                             </StyledChoice>
                             </StyledFieldContainer>

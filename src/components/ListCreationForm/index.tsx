@@ -10,10 +10,7 @@ import { StyledForm  as FormContainer, StyledSubmitButton, FormHeader, StyledInp
 import { IViewInfo } from '@pnp/sp/views';
 import { FieldTypes, IFieldInfo } from '@pnp/sp/fields/types';
 
-type Choice = {
-    Title: string,
-    Id: string,
-}
+import { Choice } from '../../types/ChoiceFieldValue';
 
 type ListCreationFormProps = {
   onCreateList: (listInfo: Partial<IListInfo>) => Promise<void>
@@ -25,11 +22,13 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
 
   const [statuses, setStatuses] = useState([{
     Title: '',
+    Color: '#000000',
     Id: uuid()
   } as Choice]);
 
   const [categories, setCategories] = useState([{
     Title: '',
+    Color: '#000000',
     Id: uuid()
   } as Choice])
   
@@ -68,6 +67,7 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     })})
   },[statuses, categories])
 
+  /*
   async function createStatusList(){
     console.log('"Creating list" but really just initializing the app');
     setStatusConfig({...StatusConfig, initialized: true});
@@ -90,7 +90,7 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
       console.log(list);
     }
   }
-
+*/
   return (
     <>
         <FormContainer>
@@ -104,11 +104,11 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Status">Status Choices</StyledLabel>
-                  <StyledChoiceField key={`Status123`} choices={statuses} setChoices={setStatuses} />
+                  <StyledChoiceField key={`Status123`} childKey={`Status`} choices={statuses} setChoices={setStatuses} />
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Category">Categories</StyledLabel>
-                  <StyledChoiceField key={`Categories123`} choices={categories} setChoices={setCategories} />
+                  <StyledChoiceField key={`Categories123`} childKey={`Category`} choices={categories} setChoices={setCategories} />
               </InputContainer>
               <StyledSubmitButton onClick={onCreateList.bind(this,listValues)}>
                 Create List
