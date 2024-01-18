@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, createRef, useEffect, useRef, useState } from 'react';
 import UseProviderContext from '../../contexts/SharePoint/UseProviderContext';
 import { IListInfo } from '@pnp/sp/lists/types';
 import { v4 as uuid } from 'uuid';
@@ -11,6 +11,7 @@ import { IViewInfo } from '@pnp/sp/views';
 import { FieldTypes, IFieldInfo } from '@pnp/sp/fields/types';
 
 import { Choice } from '../../types/ChoiceFieldValue';
+import anime from 'animejs';
 
 type ListCreationFormProps = {
   onCreateList: (listInfo: Partial<IListInfo>) => Promise<void>
@@ -20,16 +21,24 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
 
   const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
 
+  const ColorPalletteToggleRef = useRef(null);
+
+  const [colorPalletteRef, setColorPalletteRef] = useState(null);
+
   const [statuses, setStatuses] = useState([{
     Title: '',
     Color: '#000000',
-    Id: uuid()
+    ColorPalletteToggle: false,
+    Id: uuid(),
+    nodeRef: createRef()
   } as Choice]);
 
   const [categories, setCategories] = useState([{
     Title: '',
     Color: '#000000',
-    Id: uuid()
+    ColorPalletteToggle: false,
+    Id: uuid(),
+    nodeRef: createRef()
   } as Choice])
   
   const [listValues, setListValues] = useState<Partial<IListInfo>>({
@@ -57,6 +66,25 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     ]
   })
   
+  useEffect(() => {
+    if(colorPalletteRef){
+      
+      /* NEED TO FOLLOW THIS ROUTE, IT MAY BE PROMISING */
+      console.log('ColorPalletteToggleRef.current: ', ColorPalletteToggleRef.current);
+      anime({
+        targets: colorPalletteRef,
+        opacity: [0,1],
+        top: ['100%','-100%'],
+        left: ['100%','-50%'],
+        transformOrigin: ['top left','top left'],
+        scale: [0,1],
+        duration: 500,
+        easing: 'easeInOutQuad'
+      })
+      
+    }
+  },[colorPalletteRef])
+
   useEffect(() => {
     setListValues({...listValues, Fields: listValues.Fields.filter((field) => {
       if(field.Title === 'Status')
@@ -104,11 +132,11 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Status">Status Choices</StyledLabel>
-                  <StyledChoiceField key={`Status123`} childKey={`Status`} choices={statuses} setChoices={setStatuses} />
+                  <StyledChoiceField key={`Status123`} ref={ColorPalletteToggleRef} childKey={`Status`} colorPalletteControl={setColorPalletteRef} choices={statuses} setChoices={setStatuses} />
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Category">Categories</StyledLabel>
-                  <StyledChoiceField key={`Categories123`} childKey={`Category`} choices={categories} setChoices={setCategories} />
+                  <StyledChoiceField key={`Categories123`} ref={ColorPalletteToggleRef} childKey={`Category`} colorPalletteControl={setColorPalletteRef} choices={categories} setChoices={setCategories} />
               </InputContainer>
               <StyledSubmitButton onClick={onCreateList.bind(this,listValues)}>
                 Create List

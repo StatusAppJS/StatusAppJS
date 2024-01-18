@@ -2,5 +2,6 @@ export type Choice = {
     Title: string,
     Color: string,
     Id: string,
-    nodeRef?: React.RefObject<HTMLDivElement>
+    ColorPalletteToggle?: boolean,
+    nodeRef?: React.RefObject<any>
 }
