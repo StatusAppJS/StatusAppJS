@@ -16,6 +16,8 @@ import { faPalette } from '@fortawesome/free-solid-svg-icons/faPalette';
 // import generic types
 import {Choice} from  '../../../types/ChoiceFieldValue';
 
+import { BlockPickerStylesProps } from "react-color/lib/components/block/Block";
+
 type ChoiceFieldProps = {
     choices: Choice[],
     setChoices: Function,
@@ -99,6 +101,43 @@ const StyledChoiceField = forwardRef(({choices, setChoices, colorPalletteControl
         });
     };
 
+    const animateColorPalletteIn = (el:any, i: number) => {
+        anime({
+            begin: () => {
+                el.style.opacity = 0;              
+                el.style.transform = 'scale(0)';
+            },
+            targets: el,
+            opacity: 1,
+            top: '100%',
+            left: '100%',
+            transformOrigin: 'top left',
+            scale: 1,
+            duration: 500,
+            delay: i * 10,
+            transition: 'all 0.5s ease-in-out'
+        });
+    }
+
+    const animateColorPalletteOut = (el:any, i: number, onComplete:AnimeCallbackFunction) => {
+        anime({
+            begin: () => {
+                el.style.opacity = 1;
+                el.style.transform = 'scale(1)';
+            },
+            targets: el,
+            opacity: 0,
+            top: '-100%',
+            left: '100%',
+            transformOrigin:'top left',
+            scale: 0,
+            duration: 500,
+            delay: 500,
+            transition: 'all 0.5s ease-in-out',
+            complete: onComplete
+        });
+    }
+
     const simultaneousAnimations = ({
         hideEnteringElements,
         animateEnteringElements,
@@ -124,8 +163,19 @@ const StyledChoiceField = forwardRef(({choices, setChoices, colorPalletteControl
     function toggleColorSelector(id:string){
         const index = choices.findIndex((choice) => choice.Id === id);
         
-        if(choices[index].nodeRef === ref.current){
-            console.log("ref.current === colorPalletteRef.current");
+        const currentRef = choices[index].nodeRef;
+        if(ref.current === currentRef){
+            console.log('colorPallette is open, closing it');
+            ref.current = null;
+            colorPalletteControl(null);
+        }
+        else{
+            console.log('colorPallette is closed, opening it');
+            ref.current = currentRef;
+            colorPalletteControl(id);
+        }
+
+        /*if(choices[index].nodeRef === ref.current){
             colorPalletteControl(null);
             ref.current = null;
         }
@@ -134,6 +184,7 @@ const StyledChoiceField = forwardRef(({choices, setChoices, colorPalletteControl
             colorPalletteControl(choices[index].nodeRef);
             ref.current = choices[index].nodeRef;
         }
+        */
         /*
         let choiceArray = [...choices]
         console.log("id:",id);
@@ -171,6 +222,7 @@ const StyledChoiceField = forwardRef(({choices, setChoices, colorPalletteControl
         setChoicePickerOpen([...tempChoicePickerOpen]);
         */
     }
+    
     return (
         
             <Flipper flipKey={choices} handleEnterUpdateDelete={simultaneousAnimations} element="div">
@@ -191,13 +243,19 @@ const StyledChoiceField = forwardRef(({choices, setChoices, colorPalletteControl
                                     <StyledButton disabled={index === choices.length-1 || choices[index].Title.length < 1} onClick={(e) => {(index < (choices.length-1))? moveChoicesDown(e,index): console.log('Cannot go lower than the bottom')}}>
                                         <FontAwesomeIcon icon={faArrowDown} type={`Button`} />
                                     </StyledButton>
-                                    <StyledFlipper flipKey={`${ref.current}`}>
-                                        <StyledButton onClick={(e) => {toggleColorSelector(choices[index].Id)}}>
-                                                <FontAwesomeIcon icon={faPalette} type={`Button`} style={{color: choices[index].Color}} />
-                                        </StyledButton>
-                                         <Flipped flipId={`${childKey}-Color-${Id}`} onAppear={animateElementIn} onExit={animateElementOut}>
-                                            <StyledBlockPicker ref={choices[index].nodeRef} color={choices[index].Color} onChange={(c) => {setColor(c,index)}} triangle="hide" />
-                                         </Flipped>
+                                    <StyledFlipper>
+                                            <StyledButton onClick={(e) => {toggleColorSelector(choices[index].Id)}}>
+                                                    <FontAwesomeIcon icon={faPalette} type={`Button`} style={{color: choices[index].Color}} />
+                                            </StyledButton>
+                                            
+                                            <Flipped flipId={`${childKey}-Color-${Id}`} onAppear={animateColorPalletteIn} onExit={animateColorPalletteOut}>
+                                                
+                                                {
+                                                    choices[index].ColorPalletteToggle && <StyledBlockPicker colors={['#00a91c','#ffbe2e', '#d54309', '#00bde3', '#9c3d10']} ref={choices[index].nodeRef} color={choices[index].Color} onChange={(c) => {setColor(c,index)}} triangle="hide" />
+                                                }
+                                                
+                                            </Flipped>
+                                            
                                     </StyledFlipper>
                                 </StyledButtonGroup>
                             </StyledChoice>

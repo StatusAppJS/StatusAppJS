@@ -111,30 +111,11 @@ const hideColors = keyframes`
 
 `;
 
-const StyledBlockPicker = styled(BlockPicker)`
-    position: absolute !important;
-    top:100%;
-    left:100%;
-    transform:scale(0);
-    transform-origin: top left;
-    opacity: 0;
-    transition: all 0.5s ease-in-out;
-    &.color-picker-closed{
-        top: -100%;
-        left: -50%;
-        opacity:0;
-        animation: ${hideColors} 0.5s ease-in-out;
-    }
-    &.color-picker-open {
-        top:100%;
-        left:100%;
-        transform:scale(1);
-        transform-origin: top left;
-        opacity:1;
-    }
+const StyledBlockPicker = styled(BlockPicker)<{display?:boolean}>`
+    z-index: 100;
 `;
 
-const StyledFlipper = styled(Flipper)`
+const StyledFlipper = styled.div`
     position:relative;
 `;
 

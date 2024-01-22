@@ -12,6 +12,7 @@ import { FieldTypes, IFieldInfo } from '@pnp/sp/fields/types';
 
 import { Choice } from '../../types/ChoiceFieldValue';
 import anime from 'animejs';
+import { BlockPicker } from 'react-color';
 
 type ListCreationFormProps = {
   onCreateList: (listInfo: Partial<IListInfo>) => Promise<void>
@@ -21,7 +22,7 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
 
   const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
 
-  const ColorPalletteToggleRef = useRef(null);
+  const ColorPalletteToggleRef = useRef<BlockPicker>(null);
 
   const [colorPalletteRef, setColorPalletteRef] = useState(null);
 
@@ -66,22 +67,37 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     ]
   })
   
+  const closeAllToggleExcept = (id: string) =>{
+    const newStatuses = [...statuses];
+    const newCategories = [...categories];
+    newStatuses.map(status => {
+      if(status.Id !== id)
+        return status.ColorPalletteToggle = false
+      else
+        return status.ColorPalletteToggle = true;
+    });
+    newCategories.map(category => {
+      if(category.Id !== id)
+        return category.ColorPalletteToggle = false
+      else
+        return category.ColorPalletteToggle = true;
+    });
+    setStatuses([...newStatuses]);
+    setCategories([...newCategories]);
+  
+  }
   useEffect(() => {
-    if(colorPalletteRef){
-      
-      /* NEED TO FOLLOW THIS ROUTE, IT MAY BE PROMISING */
-      console.log('ColorPalletteToggleRef.current: ', ColorPalletteToggleRef.current);
-      anime({
-        targets: colorPalletteRef,
-        opacity: [0,1],
-        top: ['100%','-100%'],
-        left: ['100%','-50%'],
-        transformOrigin: ['top left','top left'],
-        scale: [0,1],
-        duration: 500,
-        easing: 'easeInOutQuad'
-      })
-      
+    if(colorPalletteRef === null){
+      // Setting all statuses to false
+      const newStatuses = [...statuses];
+      const newCategories = [...categories];
+      newStatuses.map(status => {return status.ColorPalletteToggle = false});
+      newCategories.map(category => {return category.ColorPalletteToggle = false});
+      setStatuses([...newStatuses]);
+      setCategories([...newCategories]);
+    }
+    else{
+      closeAllToggleExcept(colorPalletteRef);
     }
   },[colorPalletteRef])
 
