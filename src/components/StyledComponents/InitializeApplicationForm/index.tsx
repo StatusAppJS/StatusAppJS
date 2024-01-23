@@ -108,11 +108,17 @@ const hideColors = keyframes`
         opacity: 0;
         transform: scale(0);
     }
-
 `;
 
 const StyledBlockPicker = styled(BlockPicker)<{display?:boolean}>`
+    position: absolute !important;
     z-index: 100;
+    top: 100%;
+    left: 100%;
+    opacity: ${props => props.display ? '1' : '0'};
+    transform: ${props => props.display ? 'scale(1)' : 'scale(0)'};
+    transform-origin: top left;
+    transition: all ${props => props.display === null ? '0s' : '0.5s'} ${props => props.display ? 'ease-out' : 'ease-in'};
 `;
 
 const StyledFlipper = styled.div`
