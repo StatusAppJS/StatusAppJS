@@ -31,6 +31,7 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     Color: '#000000',
     ColorPalletteToggle: false,
     Id: uuid(),
+    Icon: '%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%202C6.48%202%202%206.48%202%2012s4.48%2010%2010%2010%2010-4.48%2010-10S17.52%202%2012%202zm-2%2015-5-5%201.41-1.41L10%2014.17l7.59-7.59L19%208l-9%209z%22%2F%3E%3C%2Fsvg%3E',
     nodeRef: createRef()
   } as Choice]);
 
@@ -38,6 +39,7 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     Title: '',
     Color: '#000000',
     ColorPalletteToggle: false,
+    Icon: '%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%202C6.48%202%202%206.48%202%2012s4.48%2010%2010%2010%2010-4.48%2010-10S17.52%202%2012%202zm-2%2015-5-5%201.41-1.41L10%2014.17l7.59-7.59L19%208l-9%209z%22%2F%3E%3C%2Fsvg%3E',
     Id: uuid(),
     nodeRef: createRef()
   } as Choice])
