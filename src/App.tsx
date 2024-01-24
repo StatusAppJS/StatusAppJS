@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState, Suspense } from "react";
 import UseProviderContext from "./contexts/SharePoint/UseProviderContext";
 import { StatusApp, Header, AppContainer } from "./components/StyledComponents/App";
 import { ISiteUserInfo } from "@pnp/sp/site-users/types"
@@ -26,7 +26,9 @@ const App: FunctionComponent = () => {
       </Header>
     </StatusApp>
     <AppContainer>
-      <StatusRouter />
+      <Suspense fallback={<div>Loading Components</div>}>
+        <StatusRouter />
+      </Suspense>
     </AppContainer>
     </>
   ); 

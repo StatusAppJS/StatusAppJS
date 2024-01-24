@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactElement, lazy, useEffect, useState } from "react"
+import { FunctionComponent, ReactElement, lazy, useEffect, useState } from "react"
 import Screen from "../../enums/Screen"
 import LoadScreen from '../Screens/LoadScreen'
 const Install = lazy(() => import('../Screens/Install'));
@@ -11,12 +11,11 @@ import UseProviderContext from "../../contexts/SharePoint/UseProviderContext"
 type StatusRouterProps = {
 }
 const StatusRouter: FunctionComponent<StatusRouterProps> = (props: StatusRouterProps) => {
-    const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
+    const { provider: {StatusConfig} } = UseProviderContext();
 
     const [renderComponent, setRenderComponent] =  useState<ReactElement<any, any> | undefined>()
 
     useEffect(() => {
-        console.log('setting new Screen Code');
         switch(StatusConfig.screen){
             case(Screen.Install):
                 setRenderComponent(<Install />)

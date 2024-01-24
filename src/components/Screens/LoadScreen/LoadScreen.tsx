@@ -9,6 +9,7 @@ import GetChangeToken from '../../../utils/GetChangeToken'
 
 import { StyledLoadingContainer, StyledHeader, StyledSubHeader } from './StyledLoadingComponents';
 import SPItem from "../../../types/SPItem";
+
 // ALL LOGIC SETTING UP SHAREPOINT SYSTEM SHOULD GO HERE, IF ANYTHING IS MISSING DIRECT TO EITHER THE APP NOT SETUP OR INSTALL SCREEN BASED ON SCA STATUS
 
 function LoadScreen<FunctionComponent>() {
