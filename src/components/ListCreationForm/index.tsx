@@ -10,7 +10,7 @@ import { StyledForm  as FormContainer, StyledSubmitButton, FormHeader, StyledInp
 import { IViewInfo } from '@pnp/sp/views';
 import { FieldTypes, IFieldInfo } from '@pnp/sp/fields/types';
 
-import { Choice } from '../../types/ChoiceFieldValue';
+import { Choice } from '../../types/Choice';
 import anime from 'animejs';
 import { BlockPicker } from 'react-color';
 
@@ -24,14 +24,14 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
 
   const ColorPalletteToggleRef = useRef<BlockPicker>(null);
 
-  const [colorPalletteRef, setColorPalletteRef] = useState(null);
+  const [previewRef, setPreviewRef] = useState(null);
 
   const [statuses, setStatuses] = useState([{
     Title: '',
     Color: '#000000',
     ColorPalletteToggle: false,
     Id: uuid(),
-    Icon: '%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%202C6.48%202%202%206.48%202%2012s4.48%2010%2010%2010%2010-4.48%2010-10S17.52%202%2012%202zm-2%2015-5-5%201.41-1.41L10%2014.17l7.59-7.59L19%208l-9%209z%22%2F%3E%3C%2Fsvg%3E',
+    Icon: 'Success',
     nodeRef: createRef()
   } as Choice]);
 
@@ -39,7 +39,7 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     Title: '',
     Color: '#000000',
     ColorPalletteToggle: false,
-    Icon: '%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%202C6.48%202%202%206.48%202%2012s4.48%2010%2010%2010%2010-4.48%2010-10S17.52%202%2012%202zm-2%2015-5-5%201.41-1.41L10%2014.17l7.59-7.59L19%208l-9%209z%22%2F%3E%3C%2Fsvg%3E',
+    Icon: 'Success',
     Id: uuid(),
     nodeRef: createRef()
   } as Choice])
@@ -89,7 +89,7 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
   
   }
   useEffect(() => {
-    if(colorPalletteRef === null){
+    if(previewRef === null){
       // Setting all statuses to false
       const newStatuses = [...statuses];
       const newCategories = [...categories];
@@ -99,9 +99,9 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
       setCategories([...newCategories]);
     }
     else{
-      closeAllToggleExcept(colorPalletteRef);
+      closeAllToggleExcept(previewRef);
     }
-  },[colorPalletteRef])
+  },[previewRef])
 
   useEffect(() => {
     setListValues({...listValues, Fields: listValues.Fields.filter((field) => {
@@ -150,11 +150,11 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Status">Status Choices</StyledLabel>
-                  <StyledChoiceField key={`Status123`} ref={ColorPalletteToggleRef} childKey={`Status`} colorPalletteControl={setColorPalletteRef} choices={statuses} setChoices={setStatuses} />
+                  <StyledChoiceField key={`Status123`} ref={ColorPalletteToggleRef} childKey={`Status`} previewControl={setPreviewRef} choices={statuses} setChoices={setStatuses} />
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Category">Categories</StyledLabel>
-                  <StyledChoiceField key={`Categories123`} ref={ColorPalletteToggleRef} childKey={`Category`} colorPalletteControl={setColorPalletteRef} choices={categories} setChoices={setCategories} />
+                  <StyledChoiceField key={`Categories123`} ref={ColorPalletteToggleRef} childKey={`Category`} previewControl={setPreviewRef} choices={categories} setChoices={setCategories} />
               </InputContainer>
               <StyledSubmitButton onClick={onCreateList.bind(this,listValues)}>
                 Create List

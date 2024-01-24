@@ -1,8 +1,1 @@
-enum LoadStep {
-    'RetrieveUser',
-    'GetConfigList',
-    'GetPageConfig',
-    'LoadPageConfig'
-}
-
-export default LoadStep;
+export { default } from './LoadStep';

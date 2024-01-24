@@ -1,4 +1,4 @@
-import React, { Component, FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import UseProviderContext from "./contexts/SharePoint/UseProviderContext";
 import { StatusApp, Header, AppContainer } from "./components/StyledComponents/App";
 import { ISiteUserInfo } from "@pnp/sp/site-users/types"
