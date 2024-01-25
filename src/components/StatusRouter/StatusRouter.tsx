@@ -1,9 +1,6 @@
 import { FunctionComponent, ReactElement, lazy, useEffect, useState } from "react"
 import Screen from "../../enums/Screen"
 import LoadScreen from '../Screens/LoadScreen'
-const Install = lazy(() => import('../Screens/Install'));
-const SetupStatusLibrary = lazy(() => import('../Screens/SetupStatusLibrary'));
-const StatusApplication = lazy(() => import('../Screens/StatusApplication'));
 import UseProviderContext from "../../contexts/SharePoint/UseProviderContext"
 
 
@@ -18,15 +15,18 @@ const StatusRouter: FunctionComponent<StatusRouterProps> = (props: StatusRouterP
     useEffect(() => {
         switch(StatusConfig.screen){
             case(Screen.Install):
+                const Install = lazy(() => import('../Screens/Install'));
                 setRenderComponent(<Install />)
                 break;
             case(Screen.Loading):
                 setRenderComponent(<LoadScreen />)
                 break;
             case(Screen.Setup):
+                const SetupStatusLibrary = lazy(() => import('../Screens/SetupStatusLibrary'));
                 setRenderComponent(<SetupStatusLibrary />)
                 break;
             case(Screen.App):
+            const StatusApplication = lazy(() => import('../Screens/StatusApplication'));
                 setRenderComponent(<StatusApplication />)
                 break;
             default:

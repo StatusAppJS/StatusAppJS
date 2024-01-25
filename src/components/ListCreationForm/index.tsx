@@ -10,30 +10,47 @@ import { StyledForm  as FormContainer, StyledSubmitButton, FormHeader, StyledInp
 import { IViewInfo } from '@pnp/sp/views';
 import { FieldTypes, IFieldInfo } from '@pnp/sp/fields/types';
 
-import { Choice } from '../../types/Choice';
 import anime from 'animejs';
 import { BlockPicker } from 'react-color';
+import { Choice } from '../../types/ChoiceFieldValue';
 
 type ListCreationFormProps = {
-  onCreateList: (listInfo: Partial<IListInfo>) => Promise<void>
+  onCreateList: (listInfo: Partial<IListInfo>, StatusInfo: Choice[]) => Promise<void>
 }
 
 const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateList}: ListCreationFormProps) => {
 
   const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
 
-  const ColorPalletteToggleRef = useRef<BlockPicker>(null);
-
   const [previewRef, setPreviewRef] = useState(null);
 
+  const previewPaneRef = useRef(null);
+
   const [statuses, setStatuses] = useState([{
-    Title: '',
-    Color: '#000000',
+    Title: 'Up',
+    Color: '#00A91C',
     ColorPalletteToggle: false,
     Id: uuid(),
     Icon: 'Success',
     nodeRef: createRef()
-  } as Choice]);
+  } as Choice,
+  {
+    Title: 'Degraded',
+    Color: '#FFBE2E',
+    ColorPalletteToggle: false,
+    Id: uuid(),
+    Icon: 'Error',
+    nodeRef: createRef()
+  } as Choice,
+  {
+    Title: 'Down',
+    Color: '#D54309',
+    ColorPalletteToggle: false,
+    Id: uuid(),
+    Icon: 'Warning',
+    nodeRef: createRef()
+  } as Choice
+  ]);
 
   const [categories, setCategories] = useState([{
     Title: '',
@@ -113,30 +130,6 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     })})
   },[statuses, categories])
 
-  /*
-  async function createStatusList(){
-    console.log('"Creating list" but really just initializing the app');
-    setStatusConfig({...StatusConfig, initialized: true});
-    var listInfo: Partial<IListInfo> = {
-      Title: "StatusAppConfig",
-      Description: "Config List for the Status Application",
-      BaseTemplate: 100,
-      AllowContentTypes: true,
-      ContentTypesEnabled: true,
-      Hidden: true,
-      ContentTypes: []
-    };
-
-    const list = await sp.web.lists.ensure(listInfo.Title as string, listInfo.Description, listInfo.BaseTemplate, listInfo.ContentTypesEnabled, listInfo);
-    if(list.created){
-      console.log(list);
-    }
-    else{
-      console.log('List already exists');
-      console.log(list);
-    }
-  }
-*/
   return (
     <>
         <FormContainer>
@@ -150,13 +143,13 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Status">Status Choices</StyledLabel>
-                  <StyledChoiceField key={`Status123`} ref={ColorPalletteToggleRef} childKey={`Status`} previewControl={setPreviewRef} choices={statuses} setChoices={setStatuses} />
+                  <StyledChoiceField key={`Status123`} ref={previewPaneRef} childKey={`Status`} previewControl={setPreviewRef} choices={statuses} setChoices={setStatuses} />
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Category">Categories</StyledLabel>
-                  <StyledChoiceField key={`Categories123`} ref={ColorPalletteToggleRef} childKey={`Category`} previewControl={setPreviewRef} choices={categories} setChoices={setCategories} />
+                  <StyledChoiceField key={`Categories123`} ref={previewPaneRef} childKey={`Category`} previewControl={setPreviewRef} choices={categories} setChoices={setCategories} />
               </InputContainer>
-              <StyledSubmitButton onClick={onCreateList.bind(this,listValues)}>
+              <StyledSubmitButton onClick={onCreateList.bind(this,listValues, statuses)}>
                 Create List
               </StyledSubmitButton>
           </div>

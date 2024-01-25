@@ -1,4 +1,4 @@
-import { Choice } from "../../Choice";
+import { Choice } from "../../ChoiceFieldValue";
 import BaseField from "../BaseField";
 import { ChoiceFieldFormatType, } from '@pnp/sp/fields/types';
 

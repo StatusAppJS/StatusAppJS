@@ -4,7 +4,7 @@ import SPStatusConfigItem from "../../../types/SPStatusConfigItem";
 import { ISiteUserInfo } from "@pnp/sp/site-users/types";
 import Screen from "../../../enums/Screen";
 import LoadStep from '../../../enums/LoadStep';
-import Loading from "./Loading";
+import Loading from "../../../Assets/Animations/Loading";
 import GetChangeToken from '../../../utils/GetChangeToken'
 
 import { StyledLoadingContainer, StyledHeader, StyledSubHeader } from './StyledLoadingComponents';
@@ -53,6 +53,8 @@ function LoadScreen<FunctionComponent>() {
         let configList;
         try{
             configList = await sp.web.lists.getByTitle('StatusAppConfigList')();
+            setStatusConfig({...StatusConfig, configList: configList, confiListId: configList.Id});
+            setLoadState(LoadStep.GetPageConfig);
         }
         catch(e){
             if(user.IsSiteAdmin)
@@ -62,10 +64,6 @@ function LoadScreen<FunctionComponent>() {
                 // List doesn't exist and you're not an admin.  Let's set it up.
                 setStatusConfig({...StatusConfig, screen: Screen.Setup});
         }
-        finally{
-            setStatusConfig({...StatusConfig, configList: configList, confiListId: configList.Id});
-            setLoadState(LoadStep.GetPageConfig)
-        }
     }
 
     async function GetPageConfig(){
@@ -73,7 +71,7 @@ function LoadScreen<FunctionComponent>() {
         let pageConfig;
     
         const configItems = await sp.web.lists.getByTitle('StatusAppConfigList').items<SPStatusConfigItem[]>()
-        pageConfig = configItems.find((item: SPStatusConfigItem) => {item.Page === window.location.pathname});
+        pageConfig = configItems.find((item: SPStatusConfigItem) => {item.Page.toLowerCase() === window.location.pathname.toLowerCase()});
         if(!pageConfig){
             if(user.IsSiteAdmin)
                 setStatusConfig({...StatusConfig, screen: Screen.Setup});

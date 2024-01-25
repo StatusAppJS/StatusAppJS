@@ -12,8 +12,9 @@ import { faArrowUp } from '@fortawesome/free-solid-svg-icons/faArrowUp';
 import { faMinus } from '@fortawesome/free-solid-svg-icons/faMinus';
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus';
 import { faPalette } from '@fortawesome/free-solid-svg-icons/faPalette';
+import { Choice } from "../../../types/ChoiceFieldValue";
 // import generic types
-import {Choice} from  '../../../types/Choice';
+
 
 type ChoiceFieldProps = {
     choices: Choice[],
