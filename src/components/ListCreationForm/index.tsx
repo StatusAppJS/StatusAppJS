@@ -26,30 +26,21 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
 
   const previewPaneRef = useRef(null);
 
-  const [statuses, setStatuses] = useState([{
-    Title: 'Up',
-    Color: '#00A91C',
-    ColorPalletteToggle: false,
-    Id: uuid(),
-    Icon: 'Success',
-    nodeRef: createRef()
-  } as Choice,
-  {
-    Title: 'Degraded',
-    Color: '#FFBE2E',
-    ColorPalletteToggle: false,
-    Id: uuid(),
-    Icon: 'Error',
-    nodeRef: createRef()
-  } as Choice,
-  {
-    Title: 'Down',
-    Color: '#D54309',
-    ColorPalletteToggle: false,
-    Id: uuid(),
-    Icon: 'Warning',
-    nodeRef: createRef()
-  } as Choice
+  const createChoice = (title: string, color: string, icon: string) => {
+    return {
+      Title: title,
+      Color: color,
+      ColorPalletteToggle: false,
+      Icon: icon,
+      Id: uuid(),
+      nodeRef: createRef()
+    } as Choice
+  }
+
+  const [statuses, setStatuses] = useState([
+    createChoice('Operational', '#00A91C', 'Success'),
+    createChoice('Degraded', '#FFBE2E', 'Error'),
+    createChoice('Non-operational', '#D54309', 'Warning')
   ]);
 
   const [categories, setCategories] = useState([{

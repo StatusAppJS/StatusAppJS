@@ -7,6 +7,8 @@ import { IListInfo } from "@pnp/sp/lists/types";
 import { IViewInfo } from "@pnp/sp/views/types";
 import { AddChoiceProps, ChoiceFieldFormatType, FieldTypes, IFieldCreationProperties, IFieldInfo } from "@pnp/sp/fields/types";
 import { Choice }  from '../../../types/ChoiceFieldValue';
+import Screen from "../../../enums/Screen";
+import { StyledLoadingContainer, StyledLoadingHeader } from "../../StyledComponents/LoadScreen";
 // ALL LOGIC SETTING UP SHAREPOINT SYSTEM SHOULD GO HERE, IF ANYTHING IS MISSING DIRECT TO EITHER THE APP NOT SETUP OR INSTALL SCREEN BASED ON SCA STATUS
 
 const SetupStatusLibrary: FunctionComponent = () => {
@@ -14,6 +16,7 @@ const SetupStatusLibrary: FunctionComponent = () => {
     const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
 
     async function createList(listInfo: Partial<IListInfo>, statusInfo: Choice[]){
+        const tempStatus = {...StatusConfig};
         console.log('Creating Status List');
         console.log(listInfo);
 
@@ -54,16 +57,21 @@ const SetupStatusLibrary: FunctionComponent = () => {
             StatusOptions: JSON.stringify({options: statuses}),
         });
 
+        const statusConfigItem = newConfig.data as SPStatusConfigItem;
+
+        statusConfigItem.StatusOptions = JSON.parse(statusConfigItem.StatusOptions as string);
+
         console.log('List should be added to the config list.  The next step is to add the admin group to the list');
         console.log('newConfig:',newConfig);
+        setStatusConfig({...tempStatus, pageconfig: statusConfigItem, screen: Screen.Loading});
     }
     
     return (
         <>
-            <div className="setup">
-            <h1>Setup Status Library</h1>
-            <ListCreationForm onCreateList={createList} />
-            </div>
+            <StyledLoadingContainer>
+                <StyledLoadingHeader>Setup Status Library</StyledLoadingHeader>
+                <ListCreationForm onCreateList={createList} />
+            </StyledLoadingContainer>
         </>
     )
 }

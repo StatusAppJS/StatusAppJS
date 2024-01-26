@@ -1,5 +1,6 @@
-import React, { FunctionComponent, useEffect, useState, lazy, Suspense } from "react"
+import React, { FunctionComponent, useEffect, useState, lazy } from "react"
 import UseProviderContext from '../../../contexts/SharePoint/UseProviderContext';
+import { StyledLoadingContainer, StyledLoadingHeader, StyledLoadingSubHeader } from '../../StyledComponents/LoadScreen';
 import SPStatusConfigItem from "../../../types/SPStatusConfigItem";
 import { ISiteUserInfo } from "@pnp/sp/site-users/types";
 import Screen from "../../../enums/Screen";
@@ -36,18 +37,15 @@ function Install<FunctionComponent>() {
             await defaultView.fields.add((await groupId.field()).Title);
             await defaultView.fields.add((await statusOptions.field()).Title);
             setStatus('Installed, Redirecting to Setup Screen...')
-            //setStatusConfig({...tempStatus, configListId: ensure.data.Id, screen: Screen.Loading});
-            // do stuff to load a configuration for this page.
+            setStatusConfig({...tempStatus, configListId: ensure.data.Id, screen: Screen.Loading});
         }
     }
     return (
-        <div style={{display: 'inline-flex',flexDirection: 'column'}}>
-            <h1>Installing</h1>
-            <Suspense fallback={<div>Getting Animation</div>}>
+        <StyledLoadingContainer>
+            <StyledLoadingHeader>Installing</StyledLoadingHeader>
                 <Installing />
-            </Suspense>
-            <h2>{status}</h2>
-        </div>
+            <StyledLoadingSubHeader>{status}</StyledLoadingSubHeader>
+        </StyledLoadingContainer>
     )
 }
 

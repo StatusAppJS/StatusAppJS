@@ -7,7 +7,7 @@ import LoadStep from '../../../enums/LoadStep';
 import Loading from "../../../Assets/Animations/Loading";
 import GetChangeToken from '../../../utils/GetChangeToken'
 
-import { StyledLoadingContainer, StyledHeader, StyledSubHeader } from './StyledLoadingComponents';
+import { StyledLoadingContainer, StyledLoadingHeader, StyledLoadingSubHeader } from '../../StyledComponents/LoadScreen';
 import SPItem from "../../../types/SPItem";
 
 // ALL LOGIC SETTING UP SHAREPOINT SYSTEM SHOULD GO HERE, IF ANYTHING IS MISSING DIRECT TO EITHER THE APP NOT SETUP OR INSTALL SCREEN BASED ON SCA STATUS
@@ -102,10 +102,10 @@ function LoadScreen<FunctionComponent>() {
     return (
         <>
           <StyledLoadingContainer>
-            <StyledHeader>Loading</StyledHeader>
+            <StyledLoadingHeader>Loading</StyledLoadingHeader>
             <div className="spinner">
               <Loading />
-              <StyledSubHeader>{LoadStatus}</StyledSubHeader>
+              <StyledLoadingSubHeader>{LoadStatus}</StyledLoadingSubHeader>
             </div>
           </StyledLoadingContainer>
         </>
