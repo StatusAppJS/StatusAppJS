@@ -40,7 +40,7 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
   const [statuses, setStatuses] = useState([
     createChoice('Operational', '#00A91C', 'Success'),
     createChoice('Degraded', '#FFBE2E', 'Error'),
-    createChoice('Non-operational', '#D54309', 'Warning')
+    createChoice('Non-Operational', '#D54309', 'Warning')
   ]);
 
   const [categories, setCategories] = useState([{

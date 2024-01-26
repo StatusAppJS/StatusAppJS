@@ -18,7 +18,7 @@ function Install<FunctionComponent>() {
     async function createConfigList(){
         const tempStatus = {...StatusConfig};
         setStatus('Creating Config List...')
-        const ensure = await sp.web.lists.ensure("StatusAppConfigList", "List to hold configs for this site collection", 100, true, {Hidden: true});
+        const ensure = await sp.web.lists.ensure("StatusAppConfigList", "List to hold configs for this site collection", 100, true, {Hidden: true, EnableAttachments: true });
 
         if(ensure.created){
             //  Add Fields if Created;

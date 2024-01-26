@@ -18,6 +18,7 @@ const SharePointProvider: FunctionComponent<{children: any}> = ({ children }: { 
     actions: { setProvider, setStatusConfig }
   };
 
+  /*
   useEffect(() => {
 
     //LIST ID SHOULD BE GOT HERE
@@ -48,7 +49,7 @@ const SharePointProvider: FunctionComponent<{children: any}> = ({ children }: { 
     console.log('Loading Application')
     
   }
-
+*/
   return (
     <ProviderContext.Provider value={value}>
       {children}

@@ -20,6 +20,7 @@ function LoadScreen<FunctionComponent>() {
     const [LoadState, setLoadState ] = useState(LoadStep.RetrieveUser)
 
     useEffect(() => {
+        console.log(LoadStatus);
         switch(LoadState){
             case LoadStep.RetrieveUser:
                 setLoadStatus('Retrieving User');
@@ -27,7 +28,7 @@ function LoadScreen<FunctionComponent>() {
                 break;
             case LoadStep.GetConfigList:
                 setLoadStatus('Retrieving Config List');
-                GetConfigList()
+                GetConfigList();
                 break;
             case LoadStep.GetPageConfig:
                 setLoadStatus('Retrieving Page Config');
@@ -38,7 +39,8 @@ function LoadScreen<FunctionComponent>() {
                 LoadPageConfig();
                 break;
         }
-      },[LoadState])
+
+      },[LoadState, StatusConfig.pageconfig])
 
     async function getUser() {
       
@@ -53,7 +55,7 @@ function LoadScreen<FunctionComponent>() {
         let configList;
         try{
             configList = await sp.web.lists.getByTitle('StatusAppConfigList')();
-            setStatusConfig({...StatusConfig, configList: configList, confiListId: configList.Id});
+            setStatusConfig({...StatusConfig, configList: sp.web.lists.getByTitle('StatusAppConfigList'), configListId: configList.Id});
             setLoadState(LoadStep.GetPageConfig);
         }
         catch(e){
@@ -67,20 +69,24 @@ function LoadScreen<FunctionComponent>() {
     }
 
     async function GetPageConfig(){
-        
-        let pageConfig;
-    
-        const configItems = await sp.web.lists.getByTitle('StatusAppConfigList').items<SPStatusConfigItem[]>()
-        pageConfig = configItems.find((item: SPStatusConfigItem) => {item.Page.toLowerCase() === window.location.pathname.toLowerCase()});
-        if(!pageConfig){
-            if(user.IsSiteAdmin)
-                setStatusConfig({...StatusConfig, screen: Screen.Setup});
-            else
-            setStatusConfig({...StatusConfig, screen: Screen.Setup}); //TODO Make a new view for when a config page does not exist and user is not admin
-        }   
-        else{
-            setStatusConfig({...StatusConfig, pageConfig: pageConfig, StatusList: {listId: pageConfig.StatusListId}});
+        if(StatusConfig.pageconfig){
             setLoadState(LoadStep.LoadPageConfig);
+        }
+        else{
+            const list =  StatusConfig.configList;
+            const configItems = await list.items<SPStatusConfigItem[]>();
+
+            if(configItems.length === 0){
+                if(user.IsSiteAdmin)
+                    setStatusConfig({...StatusConfig, screen: Screen.Setup});
+                else
+                    setStatusConfig({...StatusConfig, screen: Screen.Setup}); //TODO Make a new view for when a config page does not exist and user is not admin
+            }
+            else{
+                const pageConfig = configItems.find((item: SPStatusConfigItem) => {return item.Page.toLowerCase() === window.location.pathname.toLowerCase()});
+                setStatusConfig({...StatusConfig, pageConfig: pageConfig, StatusList: {listId: pageConfig.StatusListId}});
+                setLoadState(LoadStep.LoadPageConfig);
+            }
         }
     }
 
