@@ -1,10 +1,10 @@
 import { FunctionComponent, useEffect, useState, Suspense } from "react";
-import UseProviderContext from "./contexts/SharePoint/UseProviderContext";
-import { StatusApp, Header, AppContainer } from "./components/StyledComponents/App";
+import UseProviderContext from "../../contexts/SharePoint/UseProviderContext";
+import { StatusApp, Header, AppContainer } from "../../components/StyledComponents/App";
 import { ISiteUserInfo } from "@pnp/sp/site-users/types"
-import StatusRouter from "./components/StatusRouter";
+import StatusRouter from "../../components/StatusRouter";
 
-const App: FunctionComponent = () => {
+const AppFramework: FunctionComponent = () => {
   const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
   const [user, setUser] = useState<ISiteUserInfo | undefined>(undefined);
 
@@ -34,4 +34,4 @@ const App: FunctionComponent = () => {
   ); 
 }
 
-export default App;
+export default AppFramework;

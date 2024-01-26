@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useEffect, useState, lazy } from "react"
-import UseProviderContext from '../../../contexts/SharePoint/UseProviderContext';
-import { StyledLoadingContainer, StyledLoadingHeader, StyledLoadingSubHeader } from '../../StyledComponents/LoadScreen';
-import SPStatusConfigItem from "../../../types/SPStatusConfigItem";
+import React, { FunctionComponent, useEffect, useState } from "react"
+import UseProviderContext from '../../contexts/SharePoint/UseProviderContext';
+import { StyledLoadingContainer, StyledLoadingHeader, StyledLoadingSubHeader } from '../../components/StyledComponents/LoadScreen';
+import SPStatusConfigItem from "../../types/SPStatusConfigItem";
 import { ISiteUserInfo } from "@pnp/sp/site-users/types";
-import Screen from "../../../enums/Screen";
-const Installing = lazy(() => import('../../../Assets/Animations/Installing'))
+import Screen from "../../enums/Screen";
+import Installing from '../../Assets/Animations/Installing';
 // ALL LOGIC SETTING UP SHAREPOINT SYSTEM SHOULD GO HERE, IF ANYTHING IS MISSING DIRECT TO EITHER THE APP NOT SETUP OR INSTALL SCREEN BASED ON SCA STATUS
 
 function Install<FunctionComponent>() {

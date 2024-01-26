@@ -15,18 +15,18 @@ const StatusRouter: FunctionComponent<StatusRouterProps> = (props: StatusRouterP
     useEffect(() => {
         switch(StatusConfig.screen){
             case(Screen.Install):
-                const Install = lazy(() => import('../Screens/Install'));
+                const Install = lazy(() => import(/* webpackChunkName: "Install" */ '../../modules/Install'));
                 setRenderComponent(<Install />)
                 break;
             case(Screen.Loading):
                 setRenderComponent(<LoadScreen />)
                 break;
             case(Screen.Setup):
-                const SetupStatusLibrary = lazy(() => import('../Screens/SetupStatusLibrary'));
+                const SetupStatusLibrary = lazy(() => import(/* webpackChunkName: "InitStatusLibrary" */ '../../modules/SetupStatusLibrary'));
                 setRenderComponent(<SetupStatusLibrary />)
                 break;
             case(Screen.App):
-            const StatusApplication = lazy(() => import('../Screens/StatusApplication'));
+            const StatusApplication = lazy(() => import(/* webpackChunkName: "StatusApp" */ '../../modules/StatusApplication'));
                 setRenderComponent(<StatusApplication />)
                 break;
             default:

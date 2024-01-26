@@ -13,18 +13,17 @@ const stylesHandler = 'style-loader';
 
 const config = {
     entry: {
-        "StatusApp": './src/index.tsx',
+        "app": {
+            import: './src/index.tsx'
+        }
     },
     devtool: (isProduction)? 'source-map' : 'inline-source-map',
     output: {
         filename: (isProduction)? '[name].bundle.min.js' : '[name].bundle.js',
+        chunkFilename: (isProduction)? '[name].chunk.min.js' : '[name].chunk.js',
         path: resolve(__dirname, 'dist'),
-        globalObject: 'this',
-        library: 'StatusApp',
-        libraryExport: 'default',
-        libraryTarget: 'umd',
         clean: true,
-        publicPath: '/'
+        publicPath: 'auto'
     },
     optimization: {
         minimize: (isProduction)? true : false,
@@ -39,16 +38,17 @@ const config = {
             }
           })
         ],
+        runtimeChunk: 'single',
         splitChunks: {
             cacheGroups: {
                 vendor: {
                     test: /[\\/]node_modules[\\/]/,
                     name: 'vendors',
                     chunks: 'all',
-                },
+                }
             }
         }
-      },
+    },
     plugins: [
         /*new CompressionPlugin({
             filename: '[path][base].gz',

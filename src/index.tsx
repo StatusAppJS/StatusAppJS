@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import SharePoint from './contexts/SharePoint';
-import App from './App';
+const App = lazy(() => import(/* webpackChunkName: "framework" */ './modules/AppFramework'));
 
 
 const statusapp = document.createElement('div');
@@ -16,7 +16,8 @@ const root = createRoot(statusapp as HTMLElement);
 root.render(
     
         <SharePoint>
-            <App />
+            <Suspense fallback={<div>Loading Application Components</div>}>
+                <App />
+            </Suspense>
         </SharePoint>
 );
-

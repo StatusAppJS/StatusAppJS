@@ -1,14 +1,14 @@
 import React, { FunctionComponent, useEffect } from "react"
-import UseProviderContext from '../../../contexts/SharePoint/UseProviderContext';
-import SPStatusConfigItem from "../../../types/SPStatusConfigItem";
+import UseProviderContext from '../../contexts/SharePoint/UseProviderContext';
+import SPStatusConfigItem from "../../types/SPStatusConfigItem";
 import { ISiteUserInfo } from "@pnp/sp/site-users/types";
-import ListCreationForm from "../../ListCreationForm";
+import ListCreationForm from "../../components/ListCreationForm";
 import { IListInfo } from "@pnp/sp/lists/types";
 import { IViewInfo } from "@pnp/sp/views/types";
 import { AddChoiceProps, ChoiceFieldFormatType, FieldTypes, IFieldCreationProperties, IFieldInfo } from "@pnp/sp/fields/types";
-import { Choice }  from '../../../types/ChoiceFieldValue';
-import Screen from "../../../enums/Screen";
-import { StyledLoadingContainer, StyledLoadingHeader } from "../../StyledComponents/LoadScreen";
+import { Choice }  from '../../types/ChoiceFieldValue';
+import Screen from "../../enums/Screen";
+import { StyledLoadingContainer, StyledLoadingHeader } from "../../components/StyledComponents/LoadScreen";
 // ALL LOGIC SETTING UP SHAREPOINT SYSTEM SHOULD GO HERE, IF ANYTHING IS MISSING DIRECT TO EITHER THE APP NOT SETUP OR INSTALL SCREEN BASED ON SCA STATUS
 
 const SetupStatusLibrary: FunctionComponent = () => {

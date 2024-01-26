@@ -2,7 +2,7 @@
   "compilerOptions": {    
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
-    "module": "CommonJS",
+    "module": "ESNext",
     "target": "ESNext",
     "allowJs": true,
     "jsx": "react-jsx",
