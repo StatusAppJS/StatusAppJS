@@ -14,17 +14,18 @@ interface CardProps {
 const ServiceCard: React.FunctionComponent<CardProps> = (props: CardProps) => {
     const { provider: {StatusConfig} } = UseProviderContext();
 
-    const [status, setStatus] = React.useState(props.service.Status);
-    const [color, setColor] = React.useState('');
-    const [icon, setIcon] = React.useState('');
-    const [service, setService] = React.useState<SPItem>(props.service);
-    const statusTrigger = useRef<string>(props.service.Status);
-
     const config: SPStatusConfigItem = StatusConfig.pageconfig;
     const options = JSON.parse(config.StatusOptions as string);
     const statusOptions:Array<string> = options.options.map((option:any) => option.Title);
     const Colors:Array<string> = options.options.map((option:any) => option.Color);
     const Icons:Array<string> = options.options.map((option:any) => option.Icon);
+
+    const originalIndex = statusOptions.findIndex((option:string) => option.toLowerCase() === props.service.Status.toLowerCase());
+    const [status, setStatus] = React.useState(statusOptions[originalIndex]);
+    const [color, setColor] = React.useState(Colors[originalIndex]);
+    const [icon, setIcon] = React.useState(Icons[originalIndex]);
+    const [service, setService] = React.useState<SPItem>(props.service);
+    const statusTrigger = useRef<string>(props.service.Status);
 
     useEffect(() => {
         if(statusTrigger.current !== status) {
@@ -51,7 +52,7 @@ const ServiceCard: React.FunctionComponent<CardProps> = (props: CardProps) => {
                     <Title>{props.service.Title}</Title>
                     <DropDown value={service.Status.toLowerCase()} onChange={statusChange}>
                         {statusOptions.map((option:string,) => {
-                            return <option value={option.toLowerCase()}>{option}</option>
+                            return <option key={option.toLowerCase()} value={option.toLowerCase()}>{option}</option>
                         })}
                     </DropDown>
                 </Icon>

@@ -84,7 +84,7 @@ function LoadScreen<FunctionComponent>() {
             }
             else{
                 const pageConfig = configItems.find((item: SPStatusConfigItem) => {return item.Page.toLowerCase() === window.location.pathname.toLowerCase()});
-                setStatusConfig({...StatusConfig, pageConfig: pageConfig, StatusList: {listId: pageConfig.StatusListId}});
+                setStatusConfig({...StatusConfig, pageconfig: pageConfig, StatusList: {listId: pageConfig.StatusListId}});
                 setLoadState(LoadStep.LoadPageConfig);
             }
         }

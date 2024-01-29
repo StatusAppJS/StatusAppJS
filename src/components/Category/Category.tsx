@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { CategoryContainer } from "../StyledComponents/App/App";
 import SPItem from "../../types/SPItem";
 import ServiceCard from "../ServiceCard";
@@ -14,10 +14,19 @@ type Props = {
 
 const Category = ({ category, services, updateFunction, children }: Props) => {
 
+  const [internalServices, setInternalServices] = React.useState<SPItem[]>(services);
+  useEffect(() => {
+    console.log('Reordering Categories');
+    let categoryArray = services.filter((s:SPItem) => s.Status === "Non-Operational").sort();
+    categoryArray = categoryArray.concat(services.filter((s:SPItem) => s.Status === "Degraded").sort());
+    categoryArray = categoryArray.concat(services.filter((s:SPItem) => s.Status === "Operational").sort());
+    setInternalServices(categoryArray);
+  }, [services])
+
   const renderContent = (
     <CategoryContainer status={status}>
         <h1>{category}</h1>
-        {services.map((s: SPItem, i:number) => <ServiceCard service={s} key={`${s.Title}`} updateStatus={updateFunction} />)}
+        {internalServices.map((s: SPItem, i:number) => <ServiceCard service={s} key={`${s.Title}`} updateStatus={updateFunction} />)}
     </CategoryContainer>
   )
 

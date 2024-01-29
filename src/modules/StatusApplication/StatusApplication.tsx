@@ -23,13 +23,14 @@ function StatusApplication<FunctionComponent>() {
     useEffect(pollForChanges,[]);
 
     useEffect(() => {
+        if(services.length > 0) return;
         getServices().then((result) => {
-            console.log(result);
             setServices(result.services);
             setCategories(result.categories.Choices);
             const lm = new Date(result.services.sort((a,b) => {return new Date(b.Modified).getTime() - new Date(a.Modified).getTime()})[0].Modified);
             setLastModified(lm);
-        })
+        });
+        return;
     });
 
     useEffect(() => {
@@ -40,9 +41,18 @@ function StatusApplication<FunctionComponent>() {
         }
     },[services]);
 
+    function sortArray(array: Array<SPItem>) {
+        let newArray = array.filter((s:SPItem) => s.Status === "Non-Operational").sort();
+        newArray = newArray.concat(array.filter((s:SPItem) => s.Status === "Degraded").sort());
+        newArray = newArray.concat(array.filter((s:SPItem) => s.Status === "Operational").sort());
+
+        return newArray
+    }
     async function getServices() {
+        const items = await list.items<Array<SPItem>>();
+          
         return {
-            services: await list.items<Array<SPItem>>(), 
+            services: sortArray(items), 
             categories: await list.fields.getByInternalNameOrTitle("Categories")<ChoiceFieldInfo>()
         }
     }
@@ -104,13 +114,17 @@ function StatusApplication<FunctionComponent>() {
         const item: SPItem = await list.items.getById(id)();
         console.log('Updating UI with Server Changes...');
         
-        services.map((s: SPItem) => {
+        let tempServices = new Array<SPItem>();
+
+        tempServices = [...services.map((s: SPItem) => {
             if (s.Id === item.Id) {
                 s = assign(s,item);
                 console.log(s.Title + ' set to ' + s.Status);
             }
-        });
-        setServices([...services]);
+        })];
+
+        const newServices = sortArray(tempServices);
+        setServices([...newServices]);
         switch(item.Status.toLowerCase()){
             case 'up':
                 toast.success(`${item.Title} is Up`, {autoClose: 3000});
