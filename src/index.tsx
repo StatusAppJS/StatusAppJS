@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import SharePoint from './contexts/SharePoint';
+import { ToastContainer } from 'react-toastify';
 const App = lazy(() => import(/* webpackChunkName: "framework" */ './modules/AppFramework'));
 
 
@@ -18,6 +19,7 @@ root.render(
         <SharePoint>
             <Suspense fallback={<div>Loading Application Components</div>}>
                 <App />
+                <ToastContainer />
             </Suspense>
         </SharePoint>
 );

@@ -68,7 +68,7 @@ type SPItem = IItem & {
     Title: string,
     Status: string,
     Description: string,
-    ServiceType: string,
+    Categories: string,
     ID: number,
     Modified: string,
     Created: string,

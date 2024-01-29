@@ -91,18 +91,19 @@ function LoadScreen<FunctionComponent>() {
     }
 
     async function LoadPageConfig(){
-        const config =  StatusConfig.pageconfig;
-        const list = sp.web.lists.getById(config.StatusListId);
+        const list = sp.web.lists.getById(StatusConfig.StatusList.listId);
         const listItems = await list.items<SPItem[]>();
-        const newChangeToken = GetChangeToken(config.StatusListId);
-        const users = await sp.web.siteGroups.getById(parseInt(config.AdminGroupId)).users();
-        const adminUser = users.find((u) => u.UserId === user.UserId)
+        const newChangeToken = GetChangeToken(StatusConfig.StatusList.listId);
+        const listInfo = await list();
+        // TODO: Check if user is in admin group
+        //const users = await sp.web.siteGroups.getById(parseInt(StatusConfig.pageconfig.AdminGroupId)).users();
+        const adminUser = true;//users.find((u) => u.UserId === user.UserId)
         let isAdmin;
         if(adminUser){
             isAdmin = true;
         }
-        
-        setStatusConfig({...StatusConfig, Loaded: true, StatusList: { list: list, listItems: listItems, changeToken: newChangeToken, isAdmin: isAdmin}})
+
+        setStatusConfig({...StatusConfig, screen: Screen.App, Loaded: true, StatusList: { list: list, listId: listInfo.Id, listItems: listItems, changeToken: newChangeToken, isAdmin: isAdmin}})
     }
 
     return (

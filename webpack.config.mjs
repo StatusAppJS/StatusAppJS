@@ -17,23 +17,23 @@ const config = {
             import: './src/index.tsx'
         }
     },
-    devtool: (isProduction)? 'source-map' : 'inline-source-map',
+    devtool: (isProduction) ? 'source-map' : 'inline-source-map',
     output: {
-        filename: (isProduction)? '[name].bundle.min.js' : '[name].bundle.js',
-        chunkFilename: (isProduction)? '[name].chunk.min.js' : '[name].chunk.js',
+        filename: (isProduction) ? '[name].bundle.min.js' : '[name].bundle.js',
+        chunkFilename: (isProduction) ? '[name].chunk.min.js' : '[name].chunk.js',
         path: resolve(__dirname, 'dist'),
         clean: true,
         publicPath: 'auto'
     },
     optimization: {
-        minimize: (isProduction)? true : false,
+        minimize: (isProduction) ? true : false,
         minimizer: [
           new TerserPlugin({
             parallel: true,
             terserOptions: {
                 compress: {
                     ecma: '2017',
-                    drop_console: (isProduction)? true : false,
+                    drop_console: (isProduction) ? true : false,
                 },
             }
           })

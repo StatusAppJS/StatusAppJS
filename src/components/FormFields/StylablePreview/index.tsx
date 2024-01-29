@@ -1,5 +1,5 @@
 import React, { MutableRefObject, forwardRef } from "react";
-import { Card, Arrow, StatusCard, DropDown, Icon, Title, TwitterPicker } from "./StyledPreviewComponents";
+import { Card, Arrow, StatusCard, DropDown, Icon, Title, TwitterPicker } from "../../StyledComponents/ServiceCard";
 // import generic types
 import { Choice }  from '../../../types/ChoiceFieldValue';
 import { Icons } from "../../../enums/Icons";
