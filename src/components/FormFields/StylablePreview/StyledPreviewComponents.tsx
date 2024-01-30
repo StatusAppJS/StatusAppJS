@@ -44,7 +44,7 @@ const Icon = styled.div`
         position:absolute;
         top:.75rem;
         left:.25rem;
-        mask-image: url("data:image/svg+xml;utf8,${props => IconMap.get(props.content)}"), linear-gradient(transparent, transparent);
+        mask-image: url("data:image/svg+xml;utf8,${props => IconMap.get(props.content!)}"), linear-gradient(transparent, transparent);
         background-color: ${props => props.color}; 
     }
 `;

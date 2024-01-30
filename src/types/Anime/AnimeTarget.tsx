@@ -1,0 +1,1 @@
+export type AnimeTarget = string | object | HTMLElement | SVGElement | NodeList | null;

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react"
+import React, { FunctionComponent, createRef, useEffect, useRef, useState } from "react"
 import UseProviderContext from '../../contexts/SharePoint/UseProviderContext';
 import SPStatusConfigItem from "../../types/SPStatusConfigItem";
 import { ISiteUserInfo } from "@pnp/sp/site-users/types";
@@ -10,6 +10,9 @@ import { toast } from "react-toastify";
 import {ChoiceFieldInfo} from "../../types/ChoiceFieldInfo";
 import GetChangeToken from "../../utils/GetChangeToken";
 import { AppContainer, Header, StatusApp } from "../../components/StyledComponents/App";
+import { Flipped, Flipper } from "react-flip-toolkit";
+import ServiceCard from "../../components/ServiceCard";
+import { animateElementIn, animateElementOut, simultaneousAnimations } from "../../utils/FlipAnimation";
 // ALL LOGIC SETTING UP SHAREPOINT SYSTEM SHOULD GO HERE, IF ANYTHING IS MISSING DIRECT TO EITHER THE APP NOT SETUP OR INSTALL SCREEN BASED ON SCA STATUS
 
 function StatusApplication<FunctionComponent>() {
@@ -17,23 +20,27 @@ function StatusApplication<FunctionComponent>() {
     const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
     const list = sp.web.lists.getById(StatusConfig.StatusList.listId);
     const [services, setServices] = useState<Array<SPItem>>([]);
+    const [displayServices, setDisplayServices] = useState<Array<SPItem>>([]); // [0] = Operational, [1] = Degraded, [2] = Non-Operational
     const [categories, setCategories] = useState<Array<string>>([]);
     const [lastModified, setLastModified] = useState(new Date());
-
-    useEffect(pollForChanges,[]);
+    
+    let timerRef = useRef<any>();
 
     useEffect(() => {
         if(services.length > 0) return;
-        getServices().then((result) => {
+        
+        getServices().then((result: {services: SPItem[], categories: ChoiceFieldInfo}) => {
             setServices(result.services);
             setCategories(result.categories.Choices);
             const lm = new Date(result.services.sort((a,b) => {return new Date(b.Modified).getTime() - new Date(a.Modified).getTime()})[0].Modified);
             setLastModified(lm);
         });
         return;
-    });
+    },[]);
 
     useEffect(() => {
+        const tempServices = sortArray(services);
+        setDisplayServices([...tempServices]);
         console.log('Updating Last Modified Date');
         if(services.length > 0){
             var lastModifiedDate = new Date(services.sort((a,b) => {return new Date(b.Modified).getTime() - new Date(a.Modified).getTime()})[0].Modified);
@@ -41,12 +48,26 @@ function StatusApplication<FunctionComponent>() {
         }
     },[services]);
 
-    function sortArray(array: Array<SPItem>) {
-        let newArray = array.filter((s:SPItem) => s.Status === "Non-Operational").sort();
-        newArray = newArray.concat(array.filter((s:SPItem) => s.Status === "Degraded").sort());
-        newArray = newArray.concat(array.filter((s:SPItem) => s.Status === "Operational").sort());
+    useEffect(pollForChanges,[services]);
 
-        return newArray
+    function sortTitle(a:SPItem,b:SPItem) {
+        return (a.Title < b.Title) ? -1 : (a.Title > b.Title) ? 1 : 0;
+    }
+
+    function sortArray(array: Array<SPItem>) {
+        let no = array.filter((s:SPItem) => s.Status === "Non-Operational")
+        no = no.sort(sortTitle);
+        let newArray = [...no];
+        
+        let de = array.filter((s:SPItem) => s.Status === "Degraded")
+        de = de.sort(sortTitle);
+        newArray = [...newArray, ...de];
+
+        let op = array.filter((s:SPItem) => s.Status === "Operational")
+        op = op.sort(sortTitle);
+        newArray = [...newArray, ...op];
+        
+        return newArray;
     }
     async function getServices() {
         const items = await list.items<Array<SPItem>>();
@@ -63,11 +84,12 @@ function StatusApplication<FunctionComponent>() {
             ChangeToken = GetChangeToken(l.Id);
         });
 
-        const timer = setInterval(async () => {
+        clearInterval(timerRef.current);
+        timerRef.current = setInterval(async () => {
             const latestChangeToken = await getChanges(ChangeToken)
             ChangeToken = latestChangeToken;
         }, 5000);
-        return () => clearInterval(timer);
+        return () => clearInterval(timerRef.current);
     }
 
     async function getChanges(ChangeToken: IChangeToken | undefined) {
@@ -101,7 +123,7 @@ function StatusApplication<FunctionComponent>() {
     // UPDATE THE SHAREPOINT LIST WITH THE NEW STATUS
     async function UpdateStatus(service: SPItem, status: string): Promise<SPItem> {
         console.log(`Updating Status to ${status} from App Component in SharePoint`);
-        var data = await sp.web.lists.getByTitle('IEMO Services Statuses').items.getById(service.Id).update({
+        var data = await sp.web.lists.getById(StatusConfig.pageconfig.StatusListId).items.getById(service.Id).update({
             Status: status
         })
         console.log("Status Updated on SharePoint...  Waiting for changetoken to refresh UI...");
@@ -113,27 +135,27 @@ function StatusApplication<FunctionComponent>() {
     async function updateServiceById(id: number) {
         const item: SPItem = await list.items.getById(id)();
         console.log('Updating UI with Server Changes...');
-        
-        let tempServices = new Array<SPItem>();
-
-        tempServices = [...services.map((s: SPItem) => {
+        const tempServices = services.map((s: SPItem) => {
             if (s.Id === item.Id) {
                 s = assign(s,item);
                 console.log(s.Title + ' set to ' + s.Status);
             }
-        })];
+            return s;
+        });
 
-        const newServices = sortArray(tempServices);
-        setServices([...newServices]);
+        console.log('Updating Services Array...', tempServices);
+
+        setServices([...tempServices]);
+        const toastMessage = `${item.Title} is ${item.Status}`
         switch(item.Status.toLowerCase()){
-            case 'up':
-                toast.success(`${item.Title} is Up`, {autoClose: 3000});
+            case 'operational':
+                toast.success(toastMessage, {autoClose: 3000});
                 break;
             case 'degraded':
-                toast.warn(`${item.Title} is Degraded`, {autoClose: 3000});
+                toast.warn(toastMessage, {autoClose: 3000});
                 break;
-            case 'down':
-                toast.error(`${item.Title} Down`, {autoClose: 3000});
+            case 'non-operational':
+                toast.error(toastMessage, {autoClose: 3000});
                 break;
             default:
                 toast.info(`${item.Title} Updated`, {autoClose: 3000});
@@ -141,6 +163,13 @@ function StatusApplication<FunctionComponent>() {
         }
     }
 
+    function generateServicesArray(category:string) {
+        var tempServices = [...services];
+        tempServices = services.filter((s:SPItem) => s.Categories === category);
+        tempServices = sortArray(tempServices);
+
+        return tempServices;
+    }
     return (
         <>
             <StatusApp>
@@ -150,7 +179,17 @@ function StatusApplication<FunctionComponent>() {
                     </h1>
                 </Header>
                 <AppContainer>
-                    {categories.sort().map((c: string) => <Category category={c} services={services.filter((s: SPItem) => s.Categories === c)} key={`${getRandomString(10)}`} updateFunction={UpdateStatus} />)}
+                    {categories.map((c: string) => (
+                    <Category category={c} key={`${getRandomString(10)}`}>
+                        <Flipper flipKey={generateServicesArray(c)} handleEnterUpdateDelete={simultaneousAnimations} element="div">
+                        {(displayServices).map((s: SPItem) => ( s.Categories === c &&
+                            <Flipped key={`${s.Id}`} flipId={`${s.Id}`} onAppear={animateElementIn} onExit={animateElementOut}>
+                                <ServiceCard service={s} key={`${s.Title}`} updateStatus={UpdateStatus} />
+                            </Flipped>
+                        ))}
+                        </Flipper>
+                    </Category>
+                    ))}
                 </AppContainer>
             </StatusApp>
         </>

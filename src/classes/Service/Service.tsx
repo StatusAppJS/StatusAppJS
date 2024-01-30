@@ -1,6 +1,7 @@
 import SPService from "../../types/SPService";
 import { SPFI } from "@pnp/sp";
 import UseProviderContext from '../../contexts/SharePoint/UseProviderContext';
+import StatusAppConfig from "../../types/StatusAppConfig";
 
 class Service {
     Title: any;
@@ -9,14 +10,16 @@ class Service {
     refreshInterval: number = 10000;
     id: string;
     sp: SPFI;
+    StatusConfig: StatusAppConfig;
 
     constructor(service: SPService) {
-        const { provider: {sp}} = UseProviderContext();
+        const { provider: {sp, StatusConfig}} = UseProviderContext();
         this.id = `${service.Title!.replace(/ /g, '_')}_${crypto.randomUUID().replace(/-/g, '')}`;
         this.service = service;
         this.Title = service.Title;
         this.Status = service.Status || 'unknown';
         this.sp = sp;
+        this.StatusConfig = StatusConfig;
         /*
         setInterval(() => {
             this.getChangedStatus();
@@ -31,7 +34,7 @@ class Service {
     }
 
     async updateStatus(status: string) {
-        await this.sp.web.lists.getByTitle('IEMO Services Statuses').items.getById(this.service.Id).update({
+        await this.sp.web.lists.getById(this.StatusConfig.pageconfig.StatusListId).items.getById(this.service.Id).update({
             Status: status
         }).then(async(data) => {
             console.log("Status Updated on SharePoint...  Waiting for changetoken to refresh UI...");
