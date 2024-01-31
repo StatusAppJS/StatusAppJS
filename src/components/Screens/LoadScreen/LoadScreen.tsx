@@ -75,7 +75,7 @@ function LoadScreen<FunctionComponent>() {
         else{
             const list =  StatusConfig.configList;
             const configItems = await list.items<SPStatusConfigItem[]>();
-
+            
             if(configItems.length === 0){
                 if(user.IsSiteAdmin)
                     setStatusConfig({...StatusConfig, screen: Screen.Setup});
@@ -83,9 +83,21 @@ function LoadScreen<FunctionComponent>() {
                     setStatusConfig({...StatusConfig, screen: Screen.Setup}); //TODO Make a new view for when a config page does not exist and user is not admin
             }
             else{
-                const pageConfig = configItems.find((item: SPStatusConfigItem) => {return item.Page.toLowerCase() === window.location.pathname.toLowerCase()});
-                setStatusConfig({...StatusConfig, pageconfig: pageConfig, StatusList: {listId: pageConfig.StatusListId}});
-                setLoadState(LoadStep.LoadPageConfig);
+                try{
+                    const pageConfig = configItems.find((item: SPStatusConfigItem) => {return item.Page.toLowerCase() === window.location.pathname.toLowerCase()});
+                    console.log('pageConfig',pageConfig);
+                    if(pageConfig === undefined) {
+                        setStatusConfig({...StatusConfig, screen: Screen.Setup});
+                    }
+                    else{
+                        setStatusConfig({...StatusConfig, pageconfig: pageConfig, StatusList: {listId: pageConfig.StatusListId}});
+                        setLoadState(LoadStep.LoadPageConfig);
+                    }
+                }
+                catch (e){
+                    console.log(e);
+                    setStatusConfig({...StatusConfig, screen: Screen.Setup});
+                }
             }
         }
     }

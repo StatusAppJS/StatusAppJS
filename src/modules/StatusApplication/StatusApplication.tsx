@@ -19,19 +19,30 @@ function StatusApplication<FunctionComponent>() {
 
     const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
     const list = sp.web.lists.getById(StatusConfig.StatusList.listId);
+    type ServiceGroup = {
+        category: string,
+        services: Array<SPItem>,
+    }
     const [services, setServices] = useState<Array<SPItem>>([]);
-    const [displayServices, setDisplayServices] = useState<Array<SPItem>>([]); // [0] = Operational, [1] = Degraded, [2] = Non-Operational
-    const [categories, setCategories] = useState<Array<string>>([]);
+    const [serviceGroups, setServiceGroups] = useState<Array<ServiceGroup>>([]); // [0] = Operational, [1] = Degraded, [2] = Non-Operational
     const [lastModified, setLastModified] = useState(new Date());
     
     let timerRef = useRef<any>();
+    let flipTrigger = useRef<any>();
 
     useEffect(() => {
         if(services.length > 0) return;
         
         getServices().then((result: {services: SPItem[], categories: ChoiceFieldInfo}) => {
+            const categories = result.categories.Choices;
+            console.log(categories);
+            let tempSG = [...serviceGroups];
+            for(var i = 0; i < categories.length; i++){
+                tempSG =[...tempSG, {category: categories[i], services: result.services.filter((s:SPItem) => s.Categories === categories[i])}];
+            }
+            setServiceGroups([...tempSG]);
+            flipTrigger.current = getRandomString(10);
             setServices(result.services);
-            setCategories(result.categories.Choices);
             const lm = new Date(result.services.sort((a,b) => {return new Date(b.Modified).getTime() - new Date(a.Modified).getTime()})[0].Modified);
             setLastModified(lm);
         });
@@ -39,8 +50,6 @@ function StatusApplication<FunctionComponent>() {
     },[]);
 
     useEffect(() => {
-        const tempServices = sortArray(services);
-        setDisplayServices([...tempServices]);
         console.log('Updating Last Modified Date');
         if(services.length > 0){
             var lastModifiedDate = new Date(services.sort((a,b) => {return new Date(b.Modified).getTime() - new Date(a.Modified).getTime()})[0].Modified);
@@ -50,30 +59,11 @@ function StatusApplication<FunctionComponent>() {
 
     useEffect(pollForChanges,[services]);
 
-    function sortTitle(a:SPItem,b:SPItem) {
-        return (a.Title < b.Title) ? -1 : (a.Title > b.Title) ? 1 : 0;
-    }
-
-    function sortArray(array: Array<SPItem>) {
-        let no = array.filter((s:SPItem) => s.Status === "Non-Operational")
-        no = no.sort(sortTitle);
-        let newArray = [...no];
-        
-        let de = array.filter((s:SPItem) => s.Status === "Degraded")
-        de = de.sort(sortTitle);
-        newArray = [...newArray, ...de];
-
-        let op = array.filter((s:SPItem) => s.Status === "Operational")
-        op = op.sort(sortTitle);
-        newArray = [...newArray, ...op];
-        
-        return newArray;
-    }
     async function getServices() {
         const items = await list.items<Array<SPItem>>();
           
         return {
-            services: sortArray(items), 
+            services: items, 
             categories: await list.fields.getByInternalNameOrTitle("Categories")<ChoiceFieldInfo>()
         }
     }
@@ -88,7 +78,7 @@ function StatusApplication<FunctionComponent>() {
         timerRef.current = setInterval(async () => {
             const latestChangeToken = await getChanges(ChangeToken)
             ChangeToken = latestChangeToken;
-        }, 5000);
+        }, 15000);
         return () => clearInterval(timerRef.current);
     }
 
@@ -109,6 +99,7 @@ function StatusApplication<FunctionComponent>() {
             itemChanges.forEach(async (change: any) => {
                 console.log("Change Detected, Updating Service: " + change.ItemId);
                 await updateServiceById(change.ItemId)
+                flipTrigger.current = getRandomString(10);
             });
         }
 
@@ -135,17 +126,21 @@ function StatusApplication<FunctionComponent>() {
     async function updateServiceById(id: number) {
         const item: SPItem = await list.items.getById(id)();
         console.log('Updating UI with Server Changes...');
-        const tempServices = services.map((s: SPItem) => {
+        let tempSG = [...serviceGroups];
+        const serviceGroup = tempSG.find((sg: ServiceGroup) => sg.category === item.Categories);
+        const tempServices = serviceGroup.services.map((s: SPItem) => {
             if (s.Id === item.Id) {
                 s = assign(s,item);
                 console.log(s.Title + ' set to ' + s.Status);
             }
             return s;
         });
+        tempSG.find((sg: ServiceGroup) => sg.category === item.Categories).services = tempServices;
+        setServiceGroups([...tempSG]);
+        //setServices([...tempServices]);
+        console.log('Updating Services Array...', tempSG);
 
-        console.log('Updating Services Array...', tempServices);
-
-        setServices([...tempServices]);
+        //setServices([...tempServices]);
         const toastMessage = `${item.Title} is ${item.Status}`
         switch(item.Status.toLowerCase()){
             case 'operational':
@@ -163,13 +158,6 @@ function StatusApplication<FunctionComponent>() {
         }
     }
 
-    function generateServicesArray(category:string) {
-        var tempServices = [...services];
-        tempServices = services.filter((s:SPItem) => s.Categories === category);
-        tempServices = sortArray(tempServices);
-
-        return tempServices;
-    }
     return (
         <>
             <StatusApp>
@@ -178,19 +166,13 @@ function StatusApplication<FunctionComponent>() {
                         Last Updated: {lastModified.toLocaleString()}
                     </h1>
                 </Header>
-                <AppContainer>
-                    {categories.map((c: string) => (
-                    <Category category={c} key={`${getRandomString(10)}`}>
-                        <Flipper flipKey={generateServicesArray(c)} handleEnterUpdateDelete={simultaneousAnimations} element="div">
-                        {(displayServices).map((s: SPItem) => ( s.Categories === c &&
-                            <Flipped key={`${s.Id}`} flipId={`${s.Id}`} onAppear={animateElementIn} onExit={animateElementOut}>
-                                <ServiceCard service={s} key={`${s.Title}`} updateStatus={UpdateStatus} />
-                            </Flipped>
-                        ))}
-                        </Flipper>
-                    </Category>
-                    ))}
-                </AppContainer>
+                    <AppContainer>
+                        {serviceGroups.map((sg: ServiceGroup) => {
+                            return(
+                                <Category services={sg.services} category={sg.category} key={`${getRandomString(10)}`} updatestatus={UpdateStatus} />
+                            )
+                        })}
+                    </AppContainer>
             </StatusApp>
         </>
     )

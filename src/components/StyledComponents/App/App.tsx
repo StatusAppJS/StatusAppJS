@@ -23,6 +23,7 @@ var CategoryContainer = styled.div<{status?: string;}>`
     text-align:center;
     border-radius: 10px;
     height:1%;
+    margin: 0 25px;
 `;
 
 export {StatusApp, AppContainer, Header, CategoryContainer};

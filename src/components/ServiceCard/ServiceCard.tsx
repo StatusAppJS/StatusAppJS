@@ -9,6 +9,7 @@ import UseProviderContext from '../../contexts/SharePoint/UseProviderContext';
 interface CardProps {
     service: SPItem;
     updateStatus: (service: SPItem, status: string) => Promise<SPItem>;
+    flippedProps?: object;
 }
 
 const ServiceCard: React.FunctionComponent<CardProps> = (props: CardProps) => {
@@ -47,7 +48,7 @@ const ServiceCard: React.FunctionComponent<CardProps> = (props: CardProps) => {
     }
     const Card = (
         <>
-            <StatusCard color={color}>
+            <StatusCard color={color} {...props.flippedProps}>
                 <Icon content={icon} color={color}>
                     <Title>{props.service.Title}</Title>
                     <DropDown value={service.Status.toLowerCase()} onChange={statusChange}>
