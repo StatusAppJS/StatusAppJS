@@ -8,7 +8,7 @@ import { animateElementIn, animateElementOut, simultaneousAnimations } from "../
 type Props = {
     category: string | undefined | null;
     services: Array<SPItem>;
-    updatestatus: (service: SPItem, status:string) => Promise<SPItem>;
+    updatestatus: (service: SPItem, status:string) => void;
     children?: ReactNode
 }
 

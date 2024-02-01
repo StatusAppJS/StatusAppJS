@@ -8,7 +8,7 @@ import UseProviderContext from '../../contexts/SharePoint/UseProviderContext';
 
 interface CardProps {
     service: SPItem;
-    updateStatus: (service: SPItem, status: string) => Promise<SPItem>;
+    updateStatus: (service: SPItem, status: string) => void;
     flippedProps?: object;
 }
 
@@ -32,16 +32,17 @@ const ServiceCard: React.FunctionComponent<CardProps> = (props: CardProps) => {
         if(statusTrigger.current !== status) {
             statusTrigger.current = status;
             console.log(`Updating Status to ${status} from Card UseEffect`);
-            const returnItem: Promise<SPItem> = props.updateStatus(props.service, status);
+            /*const returnItem: Promise<SPItem> = props.updateStatus(props.service, status);
             returnItem.then((item:SPItem) => {
                 console.log('Updated Item:', item);
                 setService(item);
-            });
+            });*/
         }
     }, [status]);
 
     const statusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         console.log('Status Changed');
+        props.updateStatus(service, statusOptions[e.target.selectedIndex]);
         setColor(Colors[e.target.selectedIndex]);
         setIcon(Icons[e.target.selectedIndex]);
         setStatus(statusOptions[e.target.selectedIndex]);

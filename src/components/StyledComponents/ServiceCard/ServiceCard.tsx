@@ -60,7 +60,7 @@ const StatusCard = styled.div<{color: string}>`
         flex-direction: column;
         align-items: center;
         position:relative;
-        margin:20px 10px 0 10px;
+        margin:20px 0px 0px 0px;
         background-color: ${props => ColorBrightness(props.color, 90)};
         border-left: .5rem solid ${props => props.color};
     `;

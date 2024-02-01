@@ -13,6 +13,7 @@ import { AppContainer, Header, StatusApp } from "../../components/StyledComponen
 import { Flipped, Flipper } from "react-flip-toolkit";
 import ServiceCard from "../../components/ServiceCard";
 import { animateElementIn, animateElementOut, simultaneousAnimations } from "../../utils/FlipAnimation";
+import { IItemUpdateResult, IItemUpdateResultData } from "@pnp/sp/items";
 // ALL LOGIC SETTING UP SHAREPOINT SYSTEM SHOULD GO HERE, IF ANYTHING IS MISSING DIRECT TO EITHER THE APP NOT SETUP OR INSTALL SCREEN BASED ON SCA STATUS
 
 function StatusApplication<FunctionComponent>() {
@@ -57,7 +58,7 @@ function StatusApplication<FunctionComponent>() {
         }
     },[services]);
 
-    useEffect(pollForChanges,[services]);
+    useEffect(pollForChanges,[serviceGroups]);
 
     async function getServices() {
         const items = await list.items<Array<SPItem>>();
@@ -112,20 +113,18 @@ function StatusApplication<FunctionComponent>() {
     }
 
     // UPDATE THE SHAREPOINT LIST WITH THE NEW STATUS
-    async function UpdateStatus(service: SPItem, status: string): Promise<SPItem> {
+    function UpdateStatus(service: SPItem, status: string) {
         console.log(`Updating Status to ${status} from App Component in SharePoint`);
-        var data = await sp.web.lists.getById(StatusConfig.pageconfig.StatusListId).items.getById(service.Id).update({
+        var data = sp.web.lists.getById(StatusConfig.pageconfig.StatusListId).items.getById(service.Id).update({
             Status: status
         })
-        console.log("Status Updated on SharePoint...  Waiting for changetoken to refresh UI...");
-        const item: SPItem = await data.item();
-        return item;
+        data.then((item: IItemUpdateResult) => {
+            console.log('Status updated on SharePoint...  Refreshing UI...');
+            item.item().then((i: SPItem) => {refreshUI(i);})
+        })
     }
 
-    // UPDATE THE UI WITH CHANGES FROM SHAREPOINT
-    async function updateServiceById(id: number) {
-        const item: SPItem = await list.items.getById(id)();
-        console.log('Updating UI with Server Changes...');
+    function refreshUI(item: SPItem) {
         let tempSG = [...serviceGroups];
         const serviceGroup = tempSG.find((sg: ServiceGroup) => sg.category === item.Categories);
         const tempServices = serviceGroup.services.map((s: SPItem) => {
@@ -137,10 +136,7 @@ function StatusApplication<FunctionComponent>() {
         });
         tempSG.find((sg: ServiceGroup) => sg.category === item.Categories).services = tempServices;
         setServiceGroups([...tempSG]);
-        //setServices([...tempServices]);
-        console.log('Updating Services Array...', tempSG);
 
-        //setServices([...tempServices]);
         const toastMessage = `${item.Title} is ${item.Status}`
         switch(item.Status.toLowerCase()){
             case 'operational':
@@ -156,6 +152,15 @@ function StatusApplication<FunctionComponent>() {
                 toast.info(`${item.Title} Updated`, {autoClose: 3000});
                 break;
         }
+    }
+
+    // UPDATE THE UI WITH CHANGES FROM SHAREPOINT
+    async function updateServiceById(id: number) {
+        const item: SPItem = await list.items.getById(id)();
+        console.log('Updating UI with Server Changes...');
+       
+        refreshUI(item);
+
     }
 
     return (
@@ -179,3 +184,4 @@ function StatusApplication<FunctionComponent>() {
 }
 
 export default StatusApplication;
+
