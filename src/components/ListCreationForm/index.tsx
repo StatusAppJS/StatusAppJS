@@ -1,21 +1,19 @@
-import { FunctionComponent, createRef, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FunctionComponent, createRef, useEffect, useRef, useState } from 'react';
 import UseProviderContext from '../../contexts/SharePoint/UseProviderContext';
 import { IListInfo } from '@pnp/sp/lists/types';
+import IStatusListInfo from '../../types/IStatusListInfo';
 import { v4 as uuid } from 'uuid';
 import StyledChoiceField from '../FormFields/StyledChoiceField';
-
+import { Autocomplete } from '../../utils/Autocomplete';
 
 // Styled Components
 import { StyledForm  as FormContainer, StyledSubmitButton, FormHeader, StyledInput, StyledLabel, InputContainer } from '../StyledComponents/InitializeApplicationForm';
-import { IViewInfo } from '@pnp/sp/views';
 import { FieldTypes, IFieldInfo } from '@pnp/sp/fields/types';
 
-import anime from 'animejs';
-import { BlockPicker } from 'react-color';
 import { Choice } from '../../types/ChoiceFieldValue';
 
 type ListCreationFormProps = {
-  onCreateList: (listInfo: Partial<IListInfo>, StatusInfo: Choice[]) => Promise<void>
+  onCreateList: (listInfo: Partial<IStatusListInfo>, StatusInfo: Choice[]) => Promise<void>
 }
 
 const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateList}: ListCreationFormProps) => {
@@ -52,8 +50,10 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     nodeRef: createRef()
   } as Choice])
   
-  const [listValues, setListValues] = useState<Partial<IListInfo>>({
+  const [listValues, setListValues] = useState<Partial<IStatusListInfo>>({
     Title: "",
+    AdminGroupName: "",
+    AdminGroupId: null,
     Description: "Config List for the Status Application",
     BaseTemplate: 100,
     AllowContentTypes: true,
@@ -119,7 +119,7 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
         field.Choices = [...(categories.map((i) => i.Title))]
       return field;
     })})
-  },[statuses, categories])
+  },[statuses, categories, listValues.AdminGroupName])
 
   return (
     <>
@@ -130,15 +130,19 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
           <div>
               <InputContainer>
                   <StyledLabel htmlFor="Title">List Title</StyledLabel>
-                  <StyledInput key={`StatusTitleField`} type="text" placeholder="Title" defaultValue={listValues.Title} onChange={(e) => {setListValues({...listValues, Title: e.target.value})}} />                    
+                  <StyledInput key={`StatusTitleField`} type="text" placeholder="Title" defaultValue={listValues.Title} onChange={(e) => {setListValues({...listValues, Title: e.target.value})}} />
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Status">Status Choices</StyledLabel>
-                  <StyledChoiceField key={`Status123`} ref={previewPaneRef} childKey={`Status`} previewControl={setPreviewRef} choices={statuses} setChoices={setStatuses} />
+                  <StyledChoiceField key={`Status`} ref={previewPaneRef} childKey={`Status`} previewControl={setPreviewRef} choices={statuses} setChoices={setStatuses} />
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="Category">Categories</StyledLabel>
-                  <StyledChoiceField key={`Categories123`} ref={previewPaneRef} childKey={`Category`} previewControl={setPreviewRef} choices={categories} setChoices={setCategories} />
+                  <StyledChoiceField key={`Categories`} ref={previewPaneRef} childKey={`Category`} previewControl={setPreviewRef} choices={categories} setChoices={setCategories} />
+              </InputContainer>
+              <InputContainer>
+                  <StyledLabel htmlFor="admin">Admin Group</StyledLabel>
+                  <Autocomplete lv={listValues} slv={setListValues} suggestions={StatusConfig.siteGroups} />
               </InputContainer>
               <StyledSubmitButton onClick={onCreateList.bind(this,listValues, statuses)}>
                 Create List
@@ -148,5 +152,7 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     </>
   );
 }
+
+
 
 export default ListCreationForm;

@@ -19,8 +19,8 @@ const config = {
     },
     devtool: (isProduction) ? 'source-map' : 'inline-source-map',
     output: {
-        filename: (isProduction) ? '[name]-[contenthash].bundle.min.js' : '[name]-[contenthash].bundle.js',
-        chunkFilename: (isProduction) ? '[name]-[contenthash].chunk.min.js' : '[name]-[contenthash].chunk.js',
+        filename: (isProduction) ? '[name]-[contenthash].bundle.min.js' : '[name].bundle.js',
+        chunkFilename: (isProduction) ? '[name]-[contenthash].chunk.min.js' : '[name].chunk.js',
         path: resolve(__dirname, 'dist'),
         clean: true,
         publicPath: 'auto'

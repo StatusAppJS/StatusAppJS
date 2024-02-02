@@ -18,38 +18,6 @@ const SharePointProvider: FunctionComponent<{children: any}> = ({ children }: { 
     actions: { setProvider, setStatusConfig }
   };
 
-  /*
-  useEffect(() => {
-
-    //LIST ID SHOULD BE GOT HERE
-    if(StatusConfig.configListId === undefined){
-      setupStatusApp();
-      return;
-    }
-    if(StatusConfig.pageconfig === undefined){
-      sp.web.lists.getById(StatusConfig.configListId).items<SPStatusConfigItem[]>()
-        .then((items:SPStatusConfigItem[]) => {
-          const config = items.filter((item:SPStatusConfigItem) => item.Page === window.location.pathname)
-          if(config.length > 0){
-            setStatusConfig({...StatusConfig, pageconfig: config[0]});
-          }
-          else{
-            setStatusConfig({...StatusConfig, pageconfig: null});
-          }
-          console.log(StatusConfig);
-        });
-      return;
-    }
-    console.log(StatusConfig);
-
-  }, [StatusConfig.configListId, StatusConfig.pageconfig]);
-
-  async function setupStatusApp() {
-    
-    console.log('Loading Application')
-    
-  }
-*/
   return (
     <ProviderContext.Provider value={value}>
       {children}

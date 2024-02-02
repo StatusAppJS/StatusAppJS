@@ -53,52 +53,74 @@ function LoadScreen<FunctionComponent>() {
     async function GetConfigList(){
         
         let configList;
+        let config = StatusConfig;
+        let loadState = LoadState;
         try{
             configList = await sp.web.lists.getByTitle('StatusAppConfigList')();
-            setStatusConfig({...StatusConfig, configList: sp.web.lists.getByTitle('StatusAppConfigList'), configListId: configList.Id});
-            setLoadState(LoadStep.GetPageConfig);
+            config.configList = sp.web.lists.getByTitle('StatusAppConfigList');
+            config.configListId = configList.Id
+            loadState = LoadStep.GetPageConfig;
         }
         catch(e){
             if(user.IsSiteAdmin)
                 // List doesn't exist and you're an admin.  Let's install it.  
-                setStatusConfig({...StatusConfig, screen: Screen.Install});
+                config.screen = Screen.Install;
             else
-                // List doesn't exist and you're not an admin.  Let's set it up.
-                setStatusConfig({...StatusConfig, screen: Screen.Setup});
+                // List doesn't exist and you're not an admin.  Go to error page.
+                config.screen = Screen.Setup;
+                
+        }
+        finally{
+            setStatusConfig({...config});
+            setLoadState(loadState);
         }
     }
 
     async function GetPageConfig(){
+        let config = StatusConfig;
+        let loadState = LoadState;
+
         if(StatusConfig.pageconfig){
-            setLoadState(LoadStep.LoadPageConfig);
+            loadState = LoadStep.LoadPageConfig;
         }
         else{
             const list =  StatusConfig.configList;
             const configItems = await list.items<SPStatusConfigItem[]>();
             
+            // WE ARE GOING TO NEED GROUP NAMES FOR THIS
+            const groups = await sp.web.siteGroups();
+            const groupNames = groups.map((group) => {return group.Title});
+            config.siteGroups = groupNames;
+
             if(configItems.length === 0){
-                if(user.IsSiteAdmin)
-                    setStatusConfig({...StatusConfig, screen: Screen.Setup});
-                else
-                    setStatusConfig({...StatusConfig, screen: Screen.Setup}); //TODO Make a new view for when a config page does not exist and user is not admin
+                if(user.IsSiteAdmin){
+                    config.screen = Screen.Setup;
+                }
+                       
+                else{
+                    config.screen = Screen.Setup; //TODO Make a new view for when a config page does not exist and user is not admin
+                }
             }
             else{
                 try{
                     const pageConfig = configItems.find((item: SPStatusConfigItem) => {return item.Page.toLowerCase() === window.location.pathname.toLowerCase()});
                     console.log('pageConfig',pageConfig);
                     if(pageConfig === undefined) {
-                        setStatusConfig({...StatusConfig, screen: Screen.Setup});
+                        config.screen = Screen.Setup;
                     }
                     else{
-                        setStatusConfig({...StatusConfig, pageconfig: pageConfig, StatusList: {listId: pageConfig.StatusListId}});
-                        setLoadState(LoadStep.LoadPageConfig);
+                        config.pageconfig = pageConfig;
+                        config.StatusList = {listId: pageConfig.StatusListId};
+                        loadState = LoadStep.LoadPageConfig;
                     }
                 }
                 catch (e){
                     console.log(e);
-                    setStatusConfig({...StatusConfig, screen: Screen.Setup});
+                    config.screen = Screen.Setup;
                 }
             }
+            setStatusConfig({...config});
+            setLoadState(loadState);
         }
     }
 
