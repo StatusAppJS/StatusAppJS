@@ -6,7 +6,8 @@ const InputContainer = styled.div`
     display: flex;
     justify-content: space-evenly;
     margin-top: 25px;
-    align-items: center
+    align-items: center;
+    position: relative;
 `;
 
 const FormHeader = styled.header`
@@ -62,7 +63,7 @@ const StyledButton = styled.div<{disabled?:boolean}>`
         background-color: ${props => props.disabled ? 'inherit' : '#ccc'};
     }
 
-    color: ${props => props.disabled ? '#bbb' : 'inherit'};
+    color: ${props => props.disabled ? '#000' : 'inherit'};
 `;
 
 const StyledButtonGroup = styled.div`
@@ -77,6 +78,12 @@ const StyledAddButton = styled(StyledButton)`
 
 const StyledSubmitButton = styled(StyledButton)`
     background-color: rgb(136 241 116);
+    text-align:center;
+    margin-top:25px;
+`;
+
+const StyledDisableButton = styled(StyledButton)`
+    background-color: #bbb;
     text-align:center;
     margin-top:25px;
 `;
@@ -125,4 +132,4 @@ const StyledFlipper = styled.div`
     position:relative;
 `;
 
-export {StyledForm, StyledSubmitButton, StyledFlipper, StyledBlockPicker, StyledAddButton, StyledButtonGroup, StyledLabel, StyledInput, StyledButton, InputContainer, FormHeader, StyledFieldContainer, StyledChoice};
+export {StyledForm, StyledSubmitButton, StyledDisableButton, StyledFlipper, StyledBlockPicker, StyledAddButton, StyledButtonGroup, StyledLabel, StyledInput, StyledButton, InputContainer, FormHeader, StyledFieldContainer, StyledChoice};

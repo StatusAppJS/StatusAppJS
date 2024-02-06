@@ -8,8 +8,31 @@ import styled from "styled-components";
 type AutocompleteProps = {
     suggestions: string[],
     lv: Partial<IStatusListInfo>,
-    slv: React.Dispatch<React.SetStateAction<Partial<IStatusListInfo>>>
+    slv: React.Dispatch<React.SetStateAction<Partial<IStatusListInfo>>>,
+    selectEntry: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
+    createEntry: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
+    children?: React.ReactNode
 }
+
+const StyledAutoInput = styled(StyledInput)<{isopen: boolean}>`
+    border-bottom: ${props => props.isopen ? 'none !important' : '1px solid #ababab !important'};
+    border-radius: ${props => props.isopen ? '5px 5px 0 0 !important' : '5px !important'};
+    &:focus{
+        border-color: #ababab !important;
+        outline: none !important;
+    }
+    &:hover{
+        border-color: #ababab !important;
+        outline: none !important;
+    }
+    &:focus-visible{
+        outline: none !important;
+    }
+`;
+
+const styledsl = styled(SuggestionList)<{isopen:boolean}>`
+display: ${props => props.isopen ? 'block' : 'none'};
+`
 
 const Autocomplete: FunctionComponent<AutocompleteProps> = (props: AutocompleteProps, children) => {
     const [activeSuggestions, setActiveSuggestions] = useState(0);
@@ -44,18 +67,8 @@ const Autocomplete: FunctionComponent<AutocompleteProps> = (props: AutocompleteP
         props.slv({...props.lv, AdminGroupName: e.target.value});
     }
 
-    const onClick = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
-        console.log((e.target as HTMLLIElement).innerText,'clicked')
-        closeSuggestions();
-        const listValues = props.lv;
-        listValues.AdminGroupName = (e.target as HTMLLIElement).innerText;
-        if (inputRef.current) {
-            inputRef.current.value = listValues.AdminGroupName;
-        }
-        props.slv({...listValues});
-    }
-
     const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        console.log('showSuggestions:',showSuggestions);
         const suggestions = filteredSuggestions;
         if (e.code === "Enter") {
             closeSuggestions();
@@ -70,26 +83,16 @@ const Autocomplete: FunctionComponent<AutocompleteProps> = (props: AutocompleteP
             }
             setActiveSuggestions(activeSuggestions + 1);
         }
+        inputRef.current.focus();
     }
 
-    const StyledAutoInput = styled(StyledInput)<{isOpen: boolean}>`
-        border-bottom: ${props => props.isOpen ? 'none !important' : '1px solid #ababab !important'};
-        border-radius: ${props => props.isOpen ? '5px 5px 0 0 !important' : '5px !important'};
-        &:focus{
-            border-color: #ababab !important;
-        }
-        &:hover{
-            border-color: #ababab !important;
-        }
-    `;
-
-    const StyledSuggestionList = styled(SuggestionList)<{showSuggestions:boolean}>`
-        display: ${props => props.showSuggestions ? 'block' : 'none'};
-    `
     return (
         <>
-            <StyledAutoInput key={`StatusAdminField`} isOpen={showSuggestions} onKeyDown={onKeyDown} type="text" ref={inputRef} placeholder="Enter Group Name" defaultValue={props.lv.AdminGroupName} onChange={onChange} />
-            <SuggestionList onClick={onClick} activeSuggestions={activeSuggestions} showSuggestions={showSuggestions} filteredSuggestions={filteredSuggestions} inputRef={inputRef} />
+            <StyledAutoInput key={`StatusAdminField`} isopen={showSuggestions} onKeyDown={onKeyDown} type="text" ref={inputRef} placeholder="Enter Group Name" defaultValue={props.lv.AdminGroupName} onChange={onChange} />
+            {showSuggestions && (
+                <SuggestionList selectEntry={props.selectEntry} createEntry={props.createEntry} activeSuggestions={activeSuggestions} showSuggestions={showSuggestions} filteredSuggestions={filteredSuggestions} inputRef={inputRef} />
+            )}
+            
         </>
     );
 }
