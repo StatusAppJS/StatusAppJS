@@ -16,13 +16,14 @@ import '@pnp/sp/views';
 
 import StatusAppConfig from '../../types/StatusAppConfig';
 import Screen from '../../enums/Screen';
+import { ISiteGroupInfo } from "@pnp/sp/site-groups";
 
 const ProviderContext = createContext({provider: {
     sp: {} as SPFI,
     StatusConfig: {
         currentUser: undefined, 
         configList: undefined,
-        siteGroups: Array<string>(),
+        siteGroups: Array<ISiteGroupInfo>(),
         screen: Screen.Loading,
         Loaded: false,
     } as StatusAppConfig

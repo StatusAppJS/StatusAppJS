@@ -26,7 +26,11 @@ const StatusRouter: FunctionComponent<StatusRouterProps> = (props: StatusRouterP
                 setRenderComponent(<SetupStatusLibrary />)
                 break;
             case(Screen.App):
-            const StatusApplication = lazy(() => import(/* webpackChunkName: "StatusApp" */ '../../modules/StatusApplication'));
+                let StatusApplication;
+                if(StatusConfig.StatusList.isAdmin)
+                    StatusApplication = lazy(() => import(/* webpackChunkName: "StatusAppAdmin" */ '../../modules/StatusApplication'));
+                else
+                    StatusApplication = lazy(() => import(/* webpackChunkName: "StatusAppUser" */ '../../modules/StatusAppUser'));
                 setRenderComponent(<StatusApplication />)
                 break;
             default:

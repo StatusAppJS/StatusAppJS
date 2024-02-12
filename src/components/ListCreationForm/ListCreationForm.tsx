@@ -12,6 +12,7 @@ import { SubmitButton } from '../SubmitButton';
 import { FieldTypes, IFieldInfo } from '@pnp/sp/fields/types';
 
 import { Choice } from '../../types/ChoiceFieldValue';
+import { IGroupAddResult, ISiteGroupInfo } from '@pnp/sp/site-groups';
 
 type ListCreationFormProps = {
   onCreateList: (listInfo: Partial<IStatusListInfo>, StatusInfo: Choice[]) => Promise<void>
@@ -136,20 +137,37 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     })})
   },[statuses, categories, listValues.AdminGroupName])
 
-  const createEntry = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
-    console.log('Create Entry:',e);
-    /*
-    const listValues = props.lv;
-    listValues.AdminGroupName = (inputRef.current as HTMLInputElement).value;
-    props.slv({...listValues});
-    */
+  const createEntry = async (groupTitle: string, callback: any) => {
+    console.log('Create Entry:',groupTitle);
+    const lv = listValues;
+    const group : Partial<ISiteGroupInfo> = {
+        Title: groupTitle,
+        Description: "Group for the Status Application",
+        AllowMembersEditMembership: true,
+        AllowRequestToJoinLeave: false,
+        AutoAcceptRequestToJoinLeave: false,
+        OnlyAllowMembersViewMembership: true,
+        OwnerTitle: groupTitle,
+    }
+    const newGroup: IGroupAddResult = await sp.web.siteGroups.add(group);
+    lv.AdminGroupName = newGroup.data.Title; 
+    lv.AdminGroupId = newGroup.data.Id;
+    setListValues({...lv});
+    let config = StatusConfig;
+    const createdGroup = await newGroup.group();
+    config.siteGroups.push(createdGroup);
+    setStatusConfig({...config});
+    callback();
 }
 
-const selectEntry = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+const selectEntry = async (e: React.MouseEvent<HTMLLIElement, MouseEvent>, callback:any) => {
     console.log((e.target as HTMLLIElement).innerText,'clicked')
     const listProps = listValues;
-    listProps.AdminGroupName = (e.target as HTMLLIElement).innerText;
+    const group = await sp.web.siteGroups.getByName((e.target as HTMLLIElement).innerText)();
+    listProps.AdminGroupName = group.Title;
+    listProps.AdminGroupId = group.Id;
     setListValues({...listProps});
+    callback(group.Title);
 }
 
   return (
@@ -173,7 +191,7 @@ const selectEntry = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
               </InputContainer>
               <InputContainer>
                   <StyledLabel htmlFor="admin">Admin Group</StyledLabel>
-                  <Autocomplete lv={listValues} slv={setListValues} selectEntry={selectEntry} createEntry={createEntry} suggestions={StatusConfig.siteGroups} />
+                  <Autocomplete lv={listValues} slv={setListValues} selectEntry={selectEntry} createEntry={createEntry} suggestions={StatusConfig.siteGroups.map(group => group.Title)} />
               </InputContainer>
               <SubmitButton validate={loadingRef} callback={onCreateList.bind(this,listValues, statuses)}>
                 Create List
@@ -184,7 +202,4 @@ const selectEntry = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
   );
 }
 
-
-
 export default ListCreationForm;
-

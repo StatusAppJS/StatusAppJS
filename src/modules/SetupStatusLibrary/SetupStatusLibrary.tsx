@@ -9,13 +9,14 @@ import { AddChoiceProps, ChoiceFieldFormatType, FieldTypes, IFieldCreationProper
 import { Choice }  from '../../types/ChoiceFieldValue';
 import Screen from "../../enums/Screen";
 import { StyledLoadingContainer, StyledLoadingHeader } from "../../components/StyledComponents/LoadScreen";
+import IStatusListInfo from "../../types/IStatusListInfo";
 // ALL LOGIC SETTING UP SHAREPOINT SYSTEM SHOULD GO HERE, IF ANYTHING IS MISSING DIRECT TO EITHER THE APP NOT SETUP OR INSTALL SCREEN BASED ON SCA STATUS
 
 const SetupStatusLibrary: FunctionComponent = () => {
 
     const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
 
-    async function createList(listInfo: Partial<IListInfo>, statusInfo: Choice[]){
+    async function createList(listInfo: Partial<IStatusListInfo>, statusInfo: Choice[]){
         const tempStatus = {...StatusConfig};
         console.log('Creating Status List');
         console.log(listInfo);
@@ -49,12 +50,13 @@ const SetupStatusLibrary: FunctionComponent = () => {
         })
         
         console.log('statusInfo:',{options: statuses});
-
+        console.log(listInfo);
         const newConfig = await configListItems.add({
             Title: result.data.Title,
             Page: window.location.pathname.toLowerCase(),
             StatusListId: result.data.Id,
-            StatusOptions: JSON.stringify({options: statuses}),
+            AdminGroupId: listInfo.AdminGroupId.toString(),
+            StatusOptions: JSON.stringify({options: statuses})
         });
 
         const statusConfigItem = newConfig.data as SPStatusConfigItem;

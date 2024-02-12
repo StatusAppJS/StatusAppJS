@@ -9,8 +9,8 @@ type AutocompleteProps = {
     suggestions: string[],
     lv: Partial<IStatusListInfo>,
     slv: React.Dispatch<React.SetStateAction<Partial<IStatusListInfo>>>,
-    selectEntry: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
-    createEntry: (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => void,
+    selectEntry: (e: React.MouseEvent<HTMLLIElement, MouseEvent>, callback:any) => void,
+    createEntry: (groupTitle: string, callback:any) => Promise<void>,
     children?: React.ReactNode
 }
 
@@ -29,10 +29,6 @@ const StyledAutoInput = styled(StyledInput)<{isopen: boolean}>`
         outline: none !important;
     }
 `;
-
-const styledsl = styled(SuggestionList)<{isopen:boolean}>`
-display: ${props => props.isopen ? 'block' : 'none'};
-`
 
 const Autocomplete: FunctionComponent<AutocompleteProps> = (props: AutocompleteProps, children) => {
     const [activeSuggestions, setActiveSuggestions] = useState(0);
@@ -86,11 +82,25 @@ const Autocomplete: FunctionComponent<AutocompleteProps> = (props: AutocompleteP
         inputRef.current.focus();
     }
 
+    function createEntry(e: React.MouseEvent<HTMLLIElement, MouseEvent>) {
+        props.createEntry(inputRef.current.value, closeSuggestions);
+    }
+
+    function setSuggestion(title:string){
+        props.slv({...props.lv, AdminGroupName: title});
+        inputRef.current.value = title;
+        closeSuggestions();
+    }
+
+    function selectEntry(e: React.MouseEvent<HTMLLIElement, MouseEvent>) {
+        props.selectEntry(e, setSuggestion);
+    }
+
     return (
         <>
             <StyledAutoInput key={`StatusAdminField`} isopen={showSuggestions} onKeyDown={onKeyDown} type="text" ref={inputRef} placeholder="Enter Group Name" defaultValue={props.lv.AdminGroupName} onChange={onChange} />
             {showSuggestions && (
-                <SuggestionList selectEntry={props.selectEntry} createEntry={props.createEntry} activeSuggestions={activeSuggestions} showSuggestions={showSuggestions} filteredSuggestions={filteredSuggestions} inputRef={inputRef} />
+                <SuggestionList selectEntry={selectEntry} createEntry={createEntry} activeSuggestions={activeSuggestions} showSuggestions={showSuggestions} filteredSuggestions={filteredSuggestions} inputRef={inputRef} />
             )}
             
         </>

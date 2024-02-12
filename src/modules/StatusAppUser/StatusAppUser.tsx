@@ -17,10 +17,10 @@ import { IItemUpdateResult, IItemUpdateResultData } from "@pnp/sp/items";
 const Category = lazy(() => import(/* webpackChunkName: "Category" */ '../../components/Category'));
 // ALL LOGIC SETTING UP SHAREPOINT SYSTEM SHOULD GO HERE, IF ANYTHING IS MISSING DIRECT TO EITHER THE APP NOT SETUP OR INSTALL SCREEN BASED ON SCA STATUS
 
-function StatusApplication<FunctionComponent>() {
+function StatusAppUser<FunctionComponent>() {
 
     const { provider: {sp, StatusConfig}, actions: { setStatusConfig } } = UseProviderContext();
-    const list = sp.web.lists.getById(StatusConfig.StatusList.listId);
+    const list = sp.web.lists.getById(StatusConfig.StatusList.listId!);
     type ServiceGroup = {
         category: string,
         services: Array<SPItem>,
@@ -128,6 +128,7 @@ function StatusApplication<FunctionComponent>() {
     function refreshUI(item: SPItem) {
         let tempSG = [...serviceGroups];
         const serviceGroup = tempSG.find((sg: ServiceGroup) => sg.category === item.Categories);
+        if(serviceGroup === undefined) return;
         const tempServices = serviceGroup.services.map((s: SPItem) => {
             if (s.Id === item.Id) {
                 s = assign(s,item);
@@ -135,7 +136,9 @@ function StatusApplication<FunctionComponent>() {
             }
             return s;
         });
-        tempSG.find((sg: ServiceGroup) => sg.category === item.Categories).services = tempServices;
+        if(tempSG !== undefined){
+            tempSG.find((sg: ServiceGroup) => sg.category === item.Categories);
+        }
         setServiceGroups([...tempSG]);
 
         const toastMessage = `${item.Title} is ${item.Status}`
@@ -175,7 +178,7 @@ function StatusApplication<FunctionComponent>() {
                     <AppContainer>
                         {serviceGroups.map((sg: ServiceGroup) => {
                             return(
-                                <Category services={sg.services} category={sg.category} key={`${getRandomString(10)}`} updatestatus={UpdateStatus} />
+                                <Category services={sg.services} category={sg.category} key={`${getRandomString(10)}`} />
                             )
                         })}
                     </AppContainer>
@@ -184,5 +187,5 @@ function StatusApplication<FunctionComponent>() {
     )
 }
 
-export default StatusApplication;
+export default StatusAppUser;
 

@@ -90,7 +90,7 @@ function LoadScreen<FunctionComponent>() {
             // WE ARE GOING TO NEED GROUP NAMES FOR THIS
             const groups = await sp.web.siteGroups();
             const groupNames = groups.map((group) => {return group.Title});
-            config.siteGroups = groupNames;
+            config.siteGroups = groups;
 
             if(configItems.length === 0){
                 if(user.IsSiteAdmin){
@@ -130,9 +130,11 @@ function LoadScreen<FunctionComponent>() {
         const newChangeToken = GetChangeToken(StatusConfig.StatusList.listId);
         const listInfo = await list();
         // TODO: Check if user is in admin group
-        //const users = await sp.web.siteGroups.getById(parseInt(StatusConfig.pageconfig.AdminGroupId)).users();
-        const adminUser = true;//users.find((u) => u.UserId === user.UserId)
-        let isAdmin;
+        const users = await sp.web.siteGroups.getById(parseInt(StatusConfig.pageconfig.AdminGroupId)).users();
+
+        const adminUser = users.find((u) => u.LoginName === StatusConfig.currentUser.LoginName)
+
+        let isAdmin = false;
         if(adminUser){
             isAdmin = true;
         }

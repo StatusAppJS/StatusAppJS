@@ -8,7 +8,7 @@ import { animateElementIn, animateElementOut, simultaneousAnimations } from "../
 type Props = {
     category: string | undefined | null;
     services: Array<SPItem>;
-    updatestatus: (service: SPItem, status:string) => void;
+    updatestatus?: (service: SPItem, status:string) => void;
     children?: ReactNode
 }
 
@@ -28,6 +28,7 @@ const Category = ({ category, services, updatestatus, children }: Props) => {
     Operational = 2
   }
 
+  console.log('updatestatus', updatestatus);
   function sortArray (array: Array<SPItem>) {
     return array.sort((a:SPItem, b:SPItem)=> {
       if (a.Status === b.Status){
@@ -48,7 +49,7 @@ const Category = ({ category, services, updatestatus, children }: Props) => {
             {internalServices.map((s: SPItem, i:number) => {
               return (
                 <Flipped key={`${s.GUID}`} flipId={`${s.GUID}`} onAppear={animateElementIn} onExit={animateElementOut}>
-                    {flippedProps => <ServiceCard service={s} key={`${s.Title}`} updateStatus={updatestatus} flippedProps={flippedProps} />}
+                    {flippedProps => <ServiceCard service={s} key={`${s.Title}`} {...(updatestatus ? {updateStatus: updatestatus} : {})} flippedProps={flippedProps} />}
                 </Flipped>
               );
             })}

@@ -8,7 +8,7 @@ import UseProviderContext from '../../contexts/SharePoint/UseProviderContext';
 
 interface CardProps {
     service: SPItem;
-    updateStatus: (service: SPItem, status: string) => void;
+    updateStatus?: (service: SPItem, status: string) => void;
     flippedProps?: object;
 }
 
