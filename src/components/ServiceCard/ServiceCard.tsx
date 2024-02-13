@@ -27,7 +27,7 @@ const ServiceCard: React.FunctionComponent<CardProps> = (props: CardProps) => {
     const [icon, setIcon] = React.useState(Icons[originalIndex]);
     const [service, setService] = React.useState<SPItem>(props.service);
     const statusTrigger = useRef<string>(props.service.Status);
-
+    console.log('ServiceCard update:', props.updateStatus);
     useEffect(() => {
         if(statusTrigger.current !== status) {
             statusTrigger.current = status;
@@ -52,11 +52,13 @@ const ServiceCard: React.FunctionComponent<CardProps> = (props: CardProps) => {
             <StatusCard color={color} {...props.flippedProps}>
                 <Icon content={icon} color={color}>
                     <Title>{props.service.Title}</Title>
+                    {!props.updateStatus && <span>{service.Status}</span> || (
                     <DropDown value={service.Status.toLowerCase()} onChange={statusChange}>
                         {statusOptions.map((option:string,) => {
                             return <option key={option.toLowerCase()} value={option.toLowerCase()}>{option}</option>
                         })}
                     </DropDown>
+                    )}
                 </Icon>
             </StatusCard>
         </>
