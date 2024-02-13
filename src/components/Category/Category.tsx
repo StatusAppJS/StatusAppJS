@@ -28,7 +28,6 @@ const Category = ({ category, services, updatestatus, children }: Props) => {
     Operational = 2
   }
 
-  console.log('updatestatus', updatestatus);
   function sortArray (array: Array<SPItem>) {
     return array.sort((a:SPItem, b:SPItem)=> {
       if (a.Status === b.Status){
