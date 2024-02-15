@@ -1,15 +1,13 @@
 import React, { FunctionComponent, useEffect } from "react"
 import UseProviderContext from '../../contexts/SharePoint/UseProviderContext';
 import SPStatusConfigItem from "../../types/SPStatusConfigItem";
-import { ISiteUserInfo } from "@pnp/sp/site-users/types";
 import ListCreationForm from "../../components/ListCreationForm";
-import { IListInfo } from "@pnp/sp/lists/types";
-import { IViewInfo } from "@pnp/sp/views/types";
-import { AddChoiceProps, ChoiceFieldFormatType, FieldTypes, IFieldCreationProperties, IFieldInfo } from "@pnp/sp/fields/types";
+import { ChoiceFieldFormatType } from "@pnp/sp/fields/types";
 import { Choice }  from '../../types/ChoiceFieldValue';
 import Screen from "../../enums/Screen";
 import { StyledLoadingContainer, StyledLoadingHeader } from "../../components/StyledComponents/LoadScreen";
 import IStatusListInfo from "../../types/IStatusListInfo";
+import { ChoiceFieldInfo } from "../../types/ChoiceFieldInfo";
 // ALL LOGIC SETTING UP SHAREPOINT SYSTEM SHOULD GO HERE, IF ANYTHING IS MISSING DIRECT TO EITHER THE APP NOT SETUP OR INSTALL SCREEN BASED ON SCA STATUS
 
 const SetupStatusLibrary: FunctionComponent = () => {
@@ -25,8 +23,8 @@ const SetupStatusLibrary: FunctionComponent = () => {
 
         // for some reason Array.Map is not working correctly with the async calls.  I was forced into using a for loop :-(
         for(var i = 0; i < listInfo.Fields.length; i++){
-            const field = listInfo.Fields[i];
-            await sp.web.lists.getByTitle(result.data.Title).fields.addChoice(field.Title, {Choices: field.Choices, EditFormat: ChoiceFieldFormatType.Dropdown, FillInChoice: false, Group: 'StatusApp'});
+            const field:Partial<ChoiceFieldInfo> = listInfo.Fields[i];
+            await sp.web.lists.getByTitle(result.data.Title).fields.addChoice(field.Title, field.Choices.results, ChoiceFieldFormatType.Dropdown, false, {Group: 'StatusApp'});
             await result.list.views.getByTitle('All Items').fields.add(field.Title);
             console.log(field.Title,'added');
         }

@@ -47,7 +47,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@lottiefiles/react-lottie-player": "^3.5.3",
-    "@pnp/sp": "^3.21.0",
+    "@pnp/sp": "^2.15.0",
     "animejs": "^3.2.2",
     "react": "^18.2.0",
     "react-color": "^2.19.3",

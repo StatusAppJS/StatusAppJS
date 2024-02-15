@@ -13,6 +13,7 @@ import { FieldTypes, IFieldInfo } from '@pnp/sp/fields/types';
 
 import { Choice } from '../../types/ChoiceFieldValue';
 import { IGroupAddResult, ISiteGroupInfo } from '@pnp/sp/site-groups';
+import { ChoiceFieldInfo } from '../../types/ChoiceFieldInfo';
 
 type ListCreationFormProps = {
   onCreateList: (listInfo: Partial<IStatusListInfo>, StatusInfo: Choice[]) => Promise<void>
@@ -128,11 +129,11 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     else{
         loadingRef.current = true;
     }
-    setListValues({...listValues, Fields: listValues.Fields.filter((field) => {
+    setListValues({...listValues, Fields: listValues.Fields.filter((field:ChoiceFieldInfo) => {
       if(field.Title === 'Status')
-        field.Choices = [...(statuses.map((i) => i.Title))]
+        field.Choices.results = [...(statuses.map((i) => i.Title))]
       if(field.Title === 'Categories')
-        field.Choices = [...(categories.map((i) => i.Title))]
+        field.Choices.results = [...(categories.map((i) => i.Title))]
       return field;
     })})
   },[statuses, categories, listValues.AdminGroupName])

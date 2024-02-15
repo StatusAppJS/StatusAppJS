@@ -39,8 +39,8 @@ function StatusApplication<FunctionComponent>() {
             const categories = result.categories.Choices;
             console.log(categories);
             let tempSG = [...serviceGroups];
-            for(var i = 0; i < categories.length; i++){
-                tempSG =[...tempSG, {category: categories[i], services: result.services.filter((s:SPItem) => s.Categories === categories[i])}];
+            for(var i = 0; i < categories.results.length; i++){
+                tempSG =[...tempSG, {category: categories.results[i], services: result.services.filter((s:SPItem) => s.Categories === categories.results[i])}];
             }
             setServiceGroups([...tempSG]);
             flipTrigger.current = getRandomString(10);
