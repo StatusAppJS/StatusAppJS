@@ -17,6 +17,7 @@ const Header = styled.header`
 `;
 
 var CategoryContainer = styled.div<{status?: string;}>`
+    position:relative;
     border: 2px solid #ccc;
     width: 329px;
     padding:25px;
@@ -26,4 +27,13 @@ var CategoryContainer = styled.div<{status?: string;}>`
     margin: 0 25px;
 `;
 
-export {StatusApp, AppContainer, Header, CategoryContainer};
+var AddServiceButton = styled.div`
+    cursor:pointer;
+        position:absolute;
+        content: "+";
+        top: -2px;
+	    right: 10px;
+	    font-size: xx-large;
+`;
+
+export {StatusApp, AppContainer, Header, CategoryContainer, AddServiceButton};

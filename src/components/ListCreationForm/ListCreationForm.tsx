@@ -13,6 +13,7 @@ import { FieldTypes, IFieldInfo } from '@pnp/sp/fields/types';
 
 import { Choice } from '../../types/ChoiceFieldValue';
 import { IGroupAddResult, ISiteGroupInfo } from '@pnp/sp/site-groups';
+import { ChoiceFieldInfo } from '../../types/ChoiceFieldInfo';
 
 type ListCreationFormProps = {
   onCreateList: (listInfo: Partial<IStatusListInfo>, StatusInfo: Choice[]) => Promise<void>
@@ -128,11 +129,11 @@ const ListCreationForm: FunctionComponent<ListCreationFormProps> = ({onCreateLis
     else{
         loadingRef.current = true;
     }
-    setListValues({...listValues, Fields: listValues.Fields.filter((field) => {
+    setListValues({...listValues, Fields: listValues.Fields.filter((field:ChoiceFieldInfo) => {
       if(field.Title === 'Status')
-        field.Choices = [...(statuses.map((i) => i.Title))]
+        field.Choices.results = [...(statuses.map((i) => i.Title))]
       if(field.Title === 'Categories')
-        field.Choices = [...(categories.map((i) => i.Title))]
+        field.Choices.results = [...(categories.map((i) => i.Title))]
       return field;
     })})
   },[statuses, categories, listValues.AdminGroupName])
@@ -170,34 +171,44 @@ const selectEntry = async (e: React.MouseEvent<HTMLLIElement, MouseEvent>, callb
     callback(group.Title);
 }
 
+const AttachOrCreateList = () => {
+
+  return CreateListForm;
+}
+
+const CreateListForm = (
+  <FormContainer>
+    <FormHeader>
+        <h1>Create Status List</h1>
+    </FormHeader>
+    <div>
+        <InputContainer>
+            <StyledLabel htmlFor="Title">List Title</StyledLabel>
+            <StyledInput key={`StatusTitleField`} type="text" placeholder="Title" defaultValue={listValues.Title} onChange={(e) => {setListValues({...listValues, Title: e.target.value})}} />
+        </InputContainer>
+        <InputContainer>
+            <StyledLabel htmlFor="Status">Status Choices</StyledLabel>
+            <StyledChoiceField key={`Status`} ref={previewPaneRef} childKey={`Status`} previewControl={setPreviewRef} choices={statuses} setChoices={setStatuses} />
+        </InputContainer>
+        <InputContainer>
+            <StyledLabel htmlFor="Category">Categories</StyledLabel>
+            <StyledChoiceField key={`Categories`} ref={previewPaneRef} childKey={`Category`} previewControl={setPreviewRef} choices={categories} setChoices={setCategories} />
+        </InputContainer>
+        <InputContainer>
+            <StyledLabel htmlFor="admin">Admin Group</StyledLabel>
+            <Autocomplete lv={listValues} slv={setListValues} selectEntry={selectEntry} createEntry={createEntry} suggestions={StatusConfig.siteGroups.map(group => group.Title)} />
+        </InputContainer>
+        <SubmitButton validate={loadingRef} callback={onCreateList.bind(this,listValues, statuses)}>
+          Create List
+        </SubmitButton>
+    </div>
+  </FormContainer>
+)
+
+
   return (
     <>
-        <FormContainer>
-          <FormHeader>
-              <h1>Create Status List</h1>
-          </FormHeader>
-          <div>
-              <InputContainer>
-                  <StyledLabel htmlFor="Title">List Title</StyledLabel>
-                  <StyledInput key={`StatusTitleField`} type="text" placeholder="Title" defaultValue={listValues.Title} onChange={(e) => {setListValues({...listValues, Title: e.target.value})}} />
-              </InputContainer>
-              <InputContainer>
-                  <StyledLabel htmlFor="Status">Status Choices</StyledLabel>
-                  <StyledChoiceField key={`Status`} ref={previewPaneRef} childKey={`Status`} previewControl={setPreviewRef} choices={statuses} setChoices={setStatuses} />
-              </InputContainer>
-              <InputContainer>
-                  <StyledLabel htmlFor="Category">Categories</StyledLabel>
-                  <StyledChoiceField key={`Categories`} ref={previewPaneRef} childKey={`Category`} previewControl={setPreviewRef} choices={categories} setChoices={setCategories} />
-              </InputContainer>
-              <InputContainer>
-                  <StyledLabel htmlFor="admin">Admin Group</StyledLabel>
-                  <Autocomplete lv={listValues} slv={setListValues} selectEntry={selectEntry} createEntry={createEntry} suggestions={StatusConfig.siteGroups.map(group => group.Title)} />
-              </InputContainer>
-              <SubmitButton validate={loadingRef} callback={onCreateList.bind(this,listValues, statuses)}>
-                Create List
-              </SubmitButton>
-          </div>
-        </FormContainer>
+        {CreateListForm}
     </>
   );
 }

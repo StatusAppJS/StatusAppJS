@@ -21,7 +21,7 @@ const AppFramework: FunctionComponent = () => {
         <h1>Status App</h1>
         <div>
           <span>Logged in as: </span>
-          <span>{user ? user.Title: ''} { user ? (user.IsSiteAdmin ? "(Site Collection Admin)": "") : ""}</span>
+          <span>{user ? user.Title : ''} { user ? (user.IsSiteAdmin ? "(Site Collection Admin)": "") : ""}</span>
         </div>
       </Header>
     </StatusApp>

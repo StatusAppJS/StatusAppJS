@@ -4,6 +4,7 @@ import SPItem from "../../types/SPItem";
 import ServiceCard from "../ServiceCard";
 import { Flipped, Flipper } from "react-flip-toolkit";
 import { animateElementIn, animateElementOut, simultaneousAnimations } from "../../utils/FlipAnimation";
+import { AddServiceButton } from "../StyledComponents/App/App";
 
 type Props = {
     category: string | undefined | null;
@@ -43,6 +44,7 @@ const Category = ({ category, services, updatestatus, children }: Props) => {
 
   return (
       <CategoryContainer>
+          <AddServiceButton>+</AddServiceButton>
           <h1>{category}</h1>
           <Flipper flipKey={flipTrigger.current} element="div" handleEnterUpdateDelete={simultaneousAnimations}>
             {internalServices.map((s: SPItem, i:number) => {
